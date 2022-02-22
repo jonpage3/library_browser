@@ -8,13 +8,15 @@ class BrowserVis {
     }
 
     render(items) {
-        console.log(items);
+        let width = 1000
+        let height = 400
 
         let svg = d3.select("#"+this.svg_id);
 
+
         // X axis
         let x = d3.scaleBand()
-            .range([ 0, 1000 ])
+            .range([ 100, width +100])
             .domain(items.map(function(d) { return d.callno; }))
             .padding(0.05);
         svg.append("g")
@@ -26,10 +28,11 @@ class BrowserVis {
 
         //Add Y axis
         let y = d3.scaleLinear()
+            //this domain is where we put book height attr
             .domain([0, 400])
-            .range([ 400, 0]);
-        svg.append("g")
-            .call(d3.axisLeft(y));
+            .range([ 0, height]);
+        //svg.append("g")
+            //.call(d3.axisLeft(y));
 
         // Bars
         svg.selectAll("mybar")
@@ -39,7 +42,7 @@ class BrowserVis {
             .attr("x", function(d) { return x(d.callno); })
             .attr("y", 0)
             .attr("width", x.bandwidth())
-            .attr("height", 300)
+            .attr("height", height-100)
             .attr("fill", "#69b3a2");
 
         svg.selectAll("mybar")
@@ -54,7 +57,7 @@ class BrowserVis {
             .attr("font-family" , "sans-serif")
             .attr("text-anchor", "middle")
             .attr("transform",function(d) {
-                return "rotate(90,"+x(d.callno)+100+" ,75)"
+                return "rotate(90,"+x(d.callno)+" ,75)"
             });
 
 
