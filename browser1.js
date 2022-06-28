@@ -19,12 +19,13 @@ class BrowserVis {
             .range([ 100, width +100])
             .domain(items.map(function(d) { return d.callno; }))
             .padding(0.05);
+        /*
         svg.append("g")
             .attr("transform", "translate(0," + 300 + ")")
             .call(d3.axisBottom(x))
             .selectAll("text")
             .attr("transform", "translate(-10,0)rotate(-45)")
-            .style("text-anchor", "end");
+            .style("text-anchor", "end");*/
 
         //Add Y axis
         let y = d3.scaleLinear()
@@ -47,7 +48,7 @@ class BrowserVis {
             .attr("width", x.bandwidth())
             .attr("height", height-100)
             .attr("fill", "#69b3a2");
-
+        /*
         svg.selectAll("mybar")
             .data(items)
             .enter()
@@ -62,7 +63,7 @@ class BrowserVis {
             .attr("transform",function(d) {
                 return "rotate(90,"+x(d.callno)+" ,75)"
             });
-
+            */
 
     }
 

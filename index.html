@@ -12,13 +12,14 @@
 </head>
 <body>
 <p>Library Browser</p>
-<svg id="browser_vis" style="width: 1500px; height: 600px;"></svg>
+<svg id="browser_vis" style="width: 3000px; height: 600px;"></svg>
 
 <script>
     var vis = new BrowserVis("browser_vis");
 
 </script>
-
+<!--ajax functionality for the detailed book info popup-->
+<!--just trying to test some things here-->
 <script>
     function get_hello() {
         console.log("we made it here")
@@ -29,7 +30,7 @@
             }
         }).done();
     }
-
+    
     function generic_view(data) {
         console.log(data);
         var js_dialog;
