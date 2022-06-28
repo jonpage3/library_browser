@@ -106,7 +106,7 @@ class BrowserVis {
             .attr("transform","translate("+padding.left+","+padding.top+")")
         ;
 
-        x = d3.scaleBand()
+        x = d3.scaleLinear()
             .domain([limits.minX,limits.maxX])
             .range([0,+canvas.attr("width")]);
 
@@ -163,10 +163,11 @@ class BrowserVis {
                     return 0;
                 }
                 else{
-                    return (d.accum_length - d.clean_length)/2;
+                    return x(d.accum_length - d.clean_length);
                 }
             })
-            .attr("width",function(d) {return d.clean_length/2;})
+            .attr("y",function(d){return y(d.clean_height);})
+            .attr("width",function(d) {return x(d.clean_length);})
             .attr("height",function(d){return canvasHeight-y(d.clean_height);})
             .style("fill","steelblue");
 
