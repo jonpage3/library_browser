@@ -62,7 +62,6 @@ class BrowserVis {
 
         var canvasHeight = height -padding.top - padding.bottom;
         var canvasWidth = width -padding.left -padding.right;
-        console.log(data);
 
         var eMaxY = d3.max(data,function(d){return +d.clean_height;});
         var eMinY = d3.min(data,function(d){return +d.clean_height;});
@@ -107,7 +106,7 @@ class BrowserVis {
         ;
 
         x = d3.scaleLinear()
-            .domain([limits.minX,limits.maxX])
+            .domain([limits.minX,15000])
             .range([0,+canvas.attr("width")]);
 
         y = d3.scaleLinear()
@@ -142,12 +141,12 @@ class BrowserVis {
             .attr("width",canvasWidth)
             .attr("height",canvasHeight);
 
-        gX = canvas.append("g")
+        /*gX = canvas.append("g")
             .attr("transform","translate(0,"+(+canvas.attr("height"))+")")
             .attr("class","axis axis--x")
-            .call(xAxis);
+            .call(xAxis);*/
 
-        gY = canvas.append("g").attr("class","axis axis--y").call(yAxis);
+        //gY = canvas.append("g").attr("class","axis axis--y").call(yAxis);
 
         d3.selectAll(".axis--y > g.tick > line").attr("x2",canvasWidth).style("stroke","lightgrey");
 
