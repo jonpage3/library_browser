@@ -4,7 +4,7 @@ class BrowserVis {
         this.svg_id = svg_id;
 
         this.height = 500;
-        this.width = 1300;
+        this.width = 1200;
         // Load the data and process it as needed.
         this.loadAndPrepare();
 
@@ -59,7 +59,7 @@ class BrowserVis {
         let svg = d3.select("#"+this.svg_id);
 
         var limits = {maxY:null,minY:null,maxX:null,minX:null};
-        var padding = {top:20,bottom:20,left:100,right:20};
+        var padding = {top:20,bottom:20,left:200,right:20};
 
         var canvasHeight = height -padding.top - padding.bottom;
         var canvasWidth = width -padding.left -padding.right;
@@ -107,11 +107,11 @@ class BrowserVis {
         ;
 
         x = d3.scaleLinear()
-            .domain([limits.minX,10000])
+            .domain([limits.minX,275])
             .range([0,+canvas.attr("width")]);
         console.log(x);
         y = d3.scaleLinear()
-            .domain([limits.maxY*1.1,limits.minY-(limits.minY*0.1)])
+            .domain([limits.maxY*1.1,0])
             .range([0,+canvas.attr("height")]);
 
         /*
@@ -203,11 +203,11 @@ class BrowserVis {
                     return 0;
                 }
                 else{
-                    return x(d.accum_length - d.clean_length);
+                    return x((d.accum_length - d.clean_length)/40);
                 }
             })
             .attr("y",function(d){return y(d.clean_height);})
-            .attr("width",function(d) {return x(d.clean_length);})
+            .attr("width",function(d) {return x(d.clean_length/40);})
             .attr("height",function(d){return canvasHeight-y(d.clean_height);})
             .attr("id",function(d){return zoomData.indexOf(d);})
             .attr("callnum",function(d){return d.callnum;})
@@ -235,10 +235,10 @@ class BrowserVis {
                         return new_x(0);
                     }
                     else{
-                        return new_x(d.accum_length - (d.clean_length));
+                        return new_x((d.accum_length - (d.clean_length))/40);
                     }
                 })
-                .attr("width",function(d) {return x(d.clean_length);})
+                .attr("width",function(d) {return x(d.clean_length/40);})
                 .attr("id",function(d){return zoomData.indexOf(d);})
                 .attr("callnum",function(d){return d.callnum;})
                 .style("fill",randomColor);
