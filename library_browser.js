@@ -203,12 +203,12 @@ class BrowserVis {
                     return 0;
                 }
                 else{
-                    return x((d.accum_length - d.clean_length)/40);
+                    return x((d.accum_length - d.clean_length)/12);
                 }
             })
-            .attr("y",function(d){return y(d.clean_height);})
-            .attr("width",function(d) {return x(d.clean_length/40);})
-            .attr("height",function(d){return canvasHeight-y(d.clean_height);})
+            .attr("y",function(d){return y(d.clean_height) - 150;})
+            .attr("width",function(d) {return x(d.clean_length/12);})
+            .attr("height",function(d){return (canvasHeight-y(d.clean_height)) + 150;})
             .attr("id",function(d){return zoomData.indexOf(d);})
             .attr("callnum",function(d){return d.callnum;})
             .style("fill", randomColor);
@@ -235,10 +235,10 @@ class BrowserVis {
                         return new_x(0);
                     }
                     else{
-                        return new_x((d.accum_length - (d.clean_length))/40);
+                        return new_x((d.accum_length - (d.clean_length))/12);
                     }
                 })
-                .attr("width",function(d) {return x(d.clean_length/40);})
+                .attr("width",function(d) {return x(d.clean_length/12);})
                 .attr("id",function(d){return zoomData.indexOf(d);})
                 .attr("callnum",function(d){return d.callnum;})
                 .style("fill",randomColor);
