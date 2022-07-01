@@ -107,7 +107,7 @@ class BrowserVis {
         ;
 
         x = d3.scaleLinear()
-            .domain([limits.minX,275])
+            .domain([limits.minX,40])
             .range([0,+canvas.attr("width")]);
         console.log(x);
         y = d3.scaleLinear()
@@ -189,7 +189,8 @@ class BrowserVis {
     };
   })();
 
-    
+    thisData.forEach(function(d){var color = randomColor; d["color"] = color();});
+    console.log(thisData);
         
         var barLines = canvas.selectAll("rect.bar")
             .data(thisData)
@@ -203,16 +204,50 @@ class BrowserVis {
                     return 0;
                 }
                 else{
-                    return x((d.accum_length - d.clean_length)/12);
+                    return x((d.accum_length - d.clean_length)*.0075);
                 }
             })
-            .attr("y",function(d){return y(d.clean_height) - 150;})
-            .attr("width",function(d) {return x(d.clean_length/12);})
-            .attr("height",function(d){return (canvasHeight-y(d.clean_height)) + 150;})
+            .attr("y",function(d){return y(d.clean_height)-100;})
+            .attr("width",function(d) {return x(d.clean_length*(.0075));})
+            .attr("height",function(d){return (canvasHeight-y(d.clean_height))+100;})
             .attr("id",function(d){return zoomData.indexOf(d);})
             .attr("callnum",function(d){return d.callnum;})
-            .style("fill", randomColor);
+            .attr("booktitle",function(d){return d.title;})
+            .style("fill", function(d){return d.color});
+        
 
+        //now time to add the title to the spines
+         
+        var titles = canvas.selectAll("mybar")
+            .data(thisData)
+            .enter()
+            .append("text")
+            .text(function(d) { return d.title; })
+            .attr("x", function(d) {
+                if (zoomData.indexOf(d) == 0) {
+
+                    return x(d.clean_length/2*.0075);
+                }
+                else{
+                    return x((d.accum_length - d.clean_length/2)*.0075);
+                }
+            })
+            .attr("y",function(d){return y(d.clean_height)-40;})
+            .attr("font-size" , "12px")
+            .attr("fill" , "white")
+            .attr("font-family" , "sans-serif")
+            //.attr("text-anchor", "middle")
+            .attr("transform",function(d) {
+                if (zoomData.indexOf(d) == 0) {
+
+                    return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                }
+                else{
+                    return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                }
+                
+            });
+            
         let zoom = d3.zoom().on("zoom",zoomed);
 
         svg.call(zoom);
@@ -235,13 +270,39 @@ class BrowserVis {
                         return new_x(0);
                     }
                     else{
-                        return new_x((d.accum_length - (d.clean_length))/12);
+                        return new_x((d.accum_length - (d.clean_length))*.0075);
                     }
                 })
-                .attr("width",function(d) {return x(d.clean_length/12);})
+                .attr("width",function(d) {return x(d.clean_length*(.0075));})
                 .attr("id",function(d){return zoomData.indexOf(d);})
                 .attr("callnum",function(d){return d.callnum;})
-                .style("fill",randomColor);
+                .attr("booktitle",function(d){return d.title;})
+                .style("fill", function(d){return d.color});
+            
+            d3.select('#canvas').selectAll("text")
+                .data(thisData)
+                .attr("x", function(d) {
+                    if (data.indexOf(d) == 0) {
+    
+                        return new_x(d.clean_length/2*.0075);
+                    }
+                    else{
+                        return new_x((d.accum_length - d.clean_length/2)*.0075);
+                    }
+                })
+                .attr("font-size" , "12px")
+                .attr("fill" , "white")
+                .attr("font-family" , "sans-serif")
+                .attr("transform",function(d) {
+                    if (data.indexOf(d) == 0) {
+    
+                        return "rotate(90,"+new_x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else{
+                        return "rotate(90,"+new_x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                    }
+                    
+                });
 
         }
     }
