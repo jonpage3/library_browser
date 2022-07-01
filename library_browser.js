@@ -4,7 +4,7 @@ class BrowserVis {
         this.svg_id = svg_id;
 
         this.height = 500;
-        this.width = 1300;
+        this.width = 1200;
         // Load the data and process it as needed.
         this.loadAndPrepare();
 
@@ -59,7 +59,7 @@ class BrowserVis {
         let svg = d3.select("#"+this.svg_id);
 
         var limits = {maxY:null,minY:null,maxX:null,minX:null};
-        var padding = {top:20,bottom:20,left:100,right:20};
+        var padding = {top:20,bottom:20,left:200,right:20};
 
         var canvasHeight = height -padding.top - padding.bottom;
         var canvasWidth = width -padding.left -padding.right;
@@ -107,11 +107,11 @@ class BrowserVis {
         ;
 
         x = d3.scaleLinear()
-            .domain([limits.minX,10000])
+            .domain([limits.minX,40])
             .range([0,+canvas.attr("width")]);
         console.log(x);
         y = d3.scaleLinear()
-            .domain([limits.maxY*1.1,limits.minY-(limits.minY*0.1)])
+            .domain([limits.maxY*1.1,0])
             .range([0,+canvas.attr("height")]);
 
         /*
@@ -144,13 +144,54 @@ class BrowserVis {
 
         gX = canvas.append("g")
             .attr("transform","translate(0,"+(+canvas.attr("height"))+")")
-            .attr("class","axis axis--x")
-            .call(xAxis);
+            .attr("class","axis axis--x");
+            //.call(xAxis);
 
         gY = canvas.append("g").attr("class","axis axis--y");//.call(yAxis);
 
         d3.selectAll(".axis--y > g.tick > line").attr("x2",canvasWidth).style("stroke","lightgrey");
 
+        // Adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
+        // http://bl.ocks.org/jdarling/06019d16cb5fd6795edf
+        var randomColor = (function(){
+        var golden_ratio_conjugate = 0.618033988749895;
+        var h = Math.random();
+  
+        var hslToRgb = function (h, s, l){
+        var r, g, b;
+  
+        if(s == 0){
+            r = g = b = l; // achromatic
+        }else{
+            function hue2rgb(p, q, t){
+                if(t < 0) t += 1;
+                if(t > 1) t -= 1;
+                if(t < 1/6) return p + (q - p) * 6 * t;
+                if(t < 1/2) return q;
+                if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            }
+  
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+  
+        return '#'+Math.round(r * 255).toString(16)+Math.round(g * 255).toString(16)+Math.round(b * 255).toString(16);
+    };
+    
+    return function(){
+      h += golden_ratio_conjugate;
+      h %= 1;
+      return hslToRgb(h, 0.5, 0.60);
+    };
+  })();
+
+    thisData.forEach(function(d){var color = randomColor; d["color"] = color();});
+    console.log(thisData);
+        
         var barLines = canvas.selectAll("rect.bar")
             .data(thisData)
             .enter()
@@ -163,16 +204,50 @@ class BrowserVis {
                     return 0;
                 }
                 else{
-                    return x(d.accum_length - d.clean_length);
+                    return x((d.accum_length - d.clean_length)*.0075);
                 }
             })
-            .attr("y",function(d){return y(d.clean_height);})
-            .attr("width",function(d) {return x(d.clean_length);})
-            .attr("height",function(d){return canvasHeight-y(d.clean_height);})
+            .attr("y",function(d){return y(d.clean_height)-100;})
+            .attr("width",function(d) {return x(d.clean_length*(.0075));})
+            .attr("height",function(d){return (canvasHeight-y(d.clean_height))+100;})
             .attr("id",function(d){return zoomData.indexOf(d);})
             .attr("callnum",function(d){return d.callnum;})
-            .style("fill","steelblue");
+            .attr("booktitle",function(d){return d.title;})
+            .style("fill", function(d){return d.color});
+        
 
+        //now time to add the title to the spines
+         
+        var titles = canvas.selectAll("mybar")
+            .data(thisData)
+            .enter()
+            .append("text")
+            .text(function(d) { return d.title; })
+            .attr("x", function(d) {
+                if (zoomData.indexOf(d) == 0) {
+
+                    return x(d.clean_length/2*.0075);
+                }
+                else{
+                    return x((d.accum_length - d.clean_length/2)*.0075);
+                }
+            })
+            .attr("y",function(d){return y(d.clean_height)-40;})
+            .attr("font-size" , "12px")
+            .attr("fill" , "white")
+            .attr("font-family" , "sans-serif")
+            //.attr("text-anchor", "middle")
+            .attr("transform",function(d) {
+                if (zoomData.indexOf(d) == 0) {
+
+                    return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                }
+                else{
+                    return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                }
+                
+            });
+            
         let zoom = d3.zoom().on("zoom",zoomed);
 
         svg.call(zoom);
@@ -183,7 +258,7 @@ class BrowserVis {
             //console.log("hello world!");
             //console.log(x);
             //console.log(xAxis);
-            gX.call(xAxis.scale(event.transform.rescaleX(x)));
+            //gX.call(xAxis.scale(event.transform.rescaleX(x)));
             var new_x = event.transform.rescaleX(x);
 
             d3.select("#canvas").selectAll("rect.bar")
@@ -195,13 +270,39 @@ class BrowserVis {
                         return new_x(0);
                     }
                     else{
-                        return new_x(d.accum_length - (d.clean_length));
+                        return new_x((d.accum_length - (d.clean_length))*.0075);
                     }
                 })
-                .attr("width",function(d) {return x(d.clean_length);})
+                .attr("width",function(d) {return x(d.clean_length*(.0075));})
                 .attr("id",function(d){return zoomData.indexOf(d);})
                 .attr("callnum",function(d){return d.callnum;})
-                .style("fill","steelblue");
+                .attr("booktitle",function(d){return d.title;})
+                .style("fill", function(d){return d.color});
+            
+            d3.select('#canvas').selectAll("text")
+                .data(thisData)
+                .attr("x", function(d) {
+                    if (data.indexOf(d) == 0) {
+    
+                        return new_x(d.clean_length/2*.0075);
+                    }
+                    else{
+                        return new_x((d.accum_length - d.clean_length/2)*.0075);
+                    }
+                })
+                .attr("font-size" , "12px")
+                .attr("fill" , "white")
+                .attr("font-family" , "sans-serif")
+                .attr("transform",function(d) {
+                    if (data.indexOf(d) == 0) {
+    
+                        return "rotate(90,"+new_x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else{
+                        return "rotate(90,"+new_x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                    }
+                    
+                });
 
         }
     }
