@@ -54,6 +54,10 @@ class BrowserVis {
                 d['accum_length'] += data[n]['accum_length'];
             }
         })
+        thisData.forEach(function(d){
+            d['id'] = data.indexOf(d)
+        })
+        //console.log(thisData);
         let zoomData = thisData;
         //console.log(thisData);
         let svg = d3.select("#"+this.svg_id);
@@ -97,7 +101,7 @@ class BrowserVis {
             }
         });
 
-        console.log(limits);
+        //console.log(limits);
 
         var canvas = svg.append("g")
             .attr("id","canvas")
@@ -109,7 +113,7 @@ class BrowserVis {
         x = d3.scaleLinear()
             .domain([limits.minX,40])
             .range([0,+canvas.attr("width")]);
-        console.log(x);
+        //console.log(x);
         y = d3.scaleLinear()
             .domain([limits.maxY*1.1,0])
             .range([0,+canvas.attr("height")]);
@@ -190,8 +194,11 @@ class BrowserVis {
   })();
 
     thisData.forEach(function(d){var color = randomColor; d["color"] = color();});
-    console.log(thisData);
-        
+    //console.log(thisData);
+    
+    let moveData = thisData;
+
+    //Let's add some spines
         var barLines = canvas.selectAll("rect.bar")
             .data(thisData)
             .enter()
@@ -247,10 +254,30 @@ class BrowserVis {
                 }
                 
             });
+
+        let acc = 0;
+        
+        var button = svg.append("circle")
+            .attr("cx",100)
+            .attr("cy",500)
+            .attr("r",9)
+            .style("fill","green")
+            .on("click",moveBooks);
+
+        var button_reverse = svg.append('circle')
+            .attr("cx",100)
+            .attr("cy",600)
+            .attr("r",9)
+            .style("fill","red")
+            .on("click",moveBooksBack);
             
+            
+
+
         let zoom = d3.zoom().on("zoom",zoomed);
 
         svg.call(zoom);
+        
 
 
 
@@ -305,5 +332,180 @@ class BrowserVis {
                 });
 
         }
-    }
+
+
+        function moveBooks() {
+
+            /**
+             * need some functionaliy to figure out if the user has used the Zoom feature
+             * 
+             */
+            /*
+            //the following kind of works but needs to be made to do 
+            //different things depending on if move forward or move back are called 
+            let x_values = [];
+            d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
+                //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
+                x_values.push(d3.select(this).attr("x"))
+                }) 
+            
+            for (let i=0;i<x_values.length;i++){
+                if (x_values[i] == 0) {
+                    acc = i;
+                    break;
+                }
+                else if (x_values[i] > 0) {
+                    acc = i-1;
+                }
+            }
+            */
+            acc+=1;
+
+            /**
+             * for the future if there's a data selection of only 20 books or so,
+             * we hit the last book on the right
+             *if acc == len(moveData)-1: then you've only got one book to display
+             */
+            
+            d3.select("#canvas").selectAll("rect.bar")
+                .data(moveData)
+                .attr("x", function(d) {
+                    let i = thisData.indexOf(d);
+                    // to access the total accum length of that have been pushed left
+                    let n = thisData[acc-1];
+                    // to access the total accum length length of the book before current
+                    let j = thisData[i-1];
+                    if ( i < acc) {
+                        if (i == 0){
+                            
+                            return -(x((n.accum_length)*.0075));
+                        }
+                        else{
+                            return -(x((n.accum_length - j.accum_length))*.0075);
+                        }
+                    }
+                    else{
+                        if (i ==acc){
+                            return 0;
+                        }
+                        else{
+                            return x((j.accum_length - n.accum_length)*.0075);
+                        }
+                    }
+                })
+                .attr("width",function(d) {return x(d.clean_length*(.0075));})
+                .attr("id",function(d){return zoomData.indexOf(d);})
+                .attr("callnum",function(d){return d.callnum;})
+                .attr("booktitle",function(d){return d.title;})
+                .style("fill", function(d){return d.color});
+
+            //now move the text 
+            d3.select('#canvas').selectAll("text")
+            .data(moveData)
+            .attr("x", function(d) {
+                let i = thisData.indexOf(d);
+                // to access the total accum length of that have been pushed left
+                let n = thisData[acc-1];
+                // to access the total accum length length of the book before current
+                let j = thisData[i-1];
+                if ( i < acc) {
+                    if (i == 0){
+                        
+                        return -(x((n.accum_length - d.clean_length/2)*.0075));
+                    }
+                    else{
+                        return -(x((n.accum_length - j.accum_length)- d.clean_length/2)*.0075);
+                    }
+                }
+                else{
+                    if (i ==acc){
+                        return x(d.clean_length/2*.0075);
+                    }
+                    else{
+                        return x((j.accum_length - n.accum_length + d.clean_length/2)*.0075);
+                    }
+                }
+            })
+            .attr("font-size" , "12px")
+            .attr("fill" , "white")
+            .attr("font-family" , "sans-serif")
+            .attr("transform",function(d) {
+                let i = thisData.indexOf(d);
+                // to access the total accum length of that have been pushed left
+                let n = thisData[acc-1];
+                // to access the total accum length length of the book before current
+                let j = thisData[i-1];
+                if ( i < acc) {
+                    if (i == 0){
+                        return "rotate(90,"+(-(x((n.accum_length - d.clean_length/2)*.0075)))+","+(y(d.clean_height)-40)+")";
+                    }
+                    else{
+                        return "rotate(90,"+(-(x((n.accum_length - j.accum_length)- d.clean_length/2)*.0075))+","+(y(d.clean_height)-40)+")";
+                    }
+                }
+                else{
+                    if (i ==acc){
+                        return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else{
+                        return "rotate(90,"+x(((j.accum_length - n.accum_length) + d.clean_length/2)*.0075)+","+(y(d.clean_height)-40)+")";
+                    }
+                }
+                
+            });
+        }
+ 
+        function moveBooksBack() {
+            acc -= 2;
+            if (acc < -1){
+                acc = 0;
+                throw "You're at the beginning of this section of the stacks!";
+                
+            }
+            else if(acc ==-1) {
+
+                d3.select("#canvas").selectAll("rect.bar")
+                .data(moveData)
+                .attr("x", function(d) {
+                    if (zoomData.indexOf(d) == 0) {
+    
+                        return 0;
+                    }
+                    else{
+                        return x((d.accum_length - d.clean_length)*.0075);
+                    }
+                });
+
+                d3.select('#canvas').selectAll("text")
+                .data(moveData)
+                .attr("x", function(d) {
+                    if (zoomData.indexOf(d) == 0) {
+    
+                        return x(d.clean_length/2*.0075);
+                    }
+                    else{
+                        return x((d.accum_length - d.clean_length/2)*.0075);
+                    }
+                })
+                .attr("transform",function(d) {
+                    if (zoomData.indexOf(d) == 0) {
+    
+                        return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else{
+                        return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                    }
+                    
+                });
+                
+            }
+            else {
+                moveBooks();
+            }
+                
+            }         
+        }
+    
+    
+   
 }
