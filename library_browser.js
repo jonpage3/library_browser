@@ -262,7 +262,7 @@ class BrowserVis {
             .attr("cy",500)
             .attr("r",9)
             .style("fill","green")
-            .on("click",moveBooks);
+            .on("click",moveBooksForward);
 
         var button_reverse = svg.append('circle')
             .attr("cx",100)
@@ -335,7 +335,7 @@ class BrowserVis {
 
 
         function moveBooks() {
-
+            console.log(acc);
             /**
              * need some functionaliy to figure out if the user has used the Zoom feature
              * 
@@ -359,7 +359,7 @@ class BrowserVis {
                 }
             }
             */
-            acc+=1;
+            //acc+=1;
 
             /**
              * for the future if there's a data selection of only 20 books or so,
@@ -454,15 +454,59 @@ class BrowserVis {
                 
             });
         }
- 
+        
+        function moveBooksForward() {
+            let x_values = [];
+            d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
+                //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
+                x_values.push(d3.select(this).attr("x"))
+                }) 
+            
+            for (let i=0;i<x_values.length;i++){
+                if (x_values[i] == 0) {
+                    acc = i;
+                    break;
+                }
+                else if (x_values[i] > 0) {
+                    acc = i-1;
+                    break
+                }
+            }
+            console.log(x_values);
+            console.log(acc);
+            acc +=1;
+            console.log(acc);
+            moveBooks();
+            
+        }
+
+
         function moveBooksBack() {
-            acc -= 2;
-            if (acc < -1){
+            let x_values = [];
+            d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
+                //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
+                x_values.push(d3.select(this).attr("x"))
+                }) 
+            
+            for (let i=0;i<x_values.length;i++){
+                if (x_values[i] == 0) {
+                    acc = i;
+                    break;
+                }
+                else if (x_values[i] > 0) {
+                    acc = i-1;
+                    break
+                }
+            }
+            acc -= 1;
+            console.log(x_values);
+            console.log(acc);
+            if (acc < 0){
                 acc = 0;
                 throw "You're at the beginning of this section of the stacks!";
                 
             }
-            else if(acc ==-1) {
+            else if(acc ==0) {
 
                 d3.select("#canvas").selectAll("rect.bar")
                 .data(moveData)
