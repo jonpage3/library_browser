@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+<p>hello world!</p>
+<br>
+<p>it's me jep!</p>
+
+<script>
+
+    d3.csv("book_data.csv", function(d) {
+            //console.log(d)
+            return {
+                // Convert text values to other types as needed.
+                callnum: d.callnum,
+                title: d.title,
+                clean_height: d.clean_height,
+                clean_length: d.clean_length,
+                clean_date: d.clean_date
+            }
+        }).then(function(items) {
+            //console.log(items);
+            render(items);
+        })
+    
+    function render(data) {
+        //console.log(data);
+    }
+    
+
+</script>
+</body>
+</html>
