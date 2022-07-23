@@ -197,15 +197,16 @@ class BrowserVis {
     //console.log(thisData);
     
     let moveData = thisData;
-
+    console.log(zoomData);
     //Let's add some spines
         var barLines = canvas.selectAll("rect.bar")
             .data(thisData)
             .enter()
             .append("a")
-            .attr("xlink:href","javascript:void(0);")
-            .attr("onclick","get_hello();return false;")
-            .attr("data-id",function(d){return zoomData.indexOf(d);})
+            //.attr("href","javascript:void(0);")
+            .attr("href",function(d) {return "library_browser/bookview.html" + "?book_id=" +d.id;})
+            .attr("id",function(d){return zoomData.indexOf(d);})
+            .attr("onclick","get_hello(this.id);return false;")
             .append("rect")
             .attr("class","bar")
             .attr("clip-path","url(#clip)")
@@ -221,10 +222,11 @@ class BrowserVis {
             .attr("y",function(d){return y(d.clean_height)-100;})
             .attr("width",function(d) {return x(d.clean_length*(.0075));})
             .attr("height",function(d){return (canvasHeight-y(d.clean_height))+100;})
-            .attr("id",function(d){return zoomData.indexOf(d);})
+            //.attr("id",function(d){return zoomData.indexOf(d);})
             .attr("callnum",function(d){return d.callnum;})
             .attr("booktitle",function(d){return d.title;})
-            .style("fill", function(d){return d.color});
+            .style("fill", function(d){return d.color})
+            //.on("click",function(d) {return bookviewCall(d)});
         
 
         //now time to add the title to the spines
@@ -233,8 +235,8 @@ class BrowserVis {
             .data(thisData)
             .enter()
             .append("a")
-            .attr("xlink:href","javascript:void(0);")
-            .attr("onclick","get_hello();return false;")
+            //.attr("xlink:href","javascript:void(0);")
+            //.attr("onclick","get_hello();return false;")
             .attr("id",function(d){return zoomData.indexOf(d);})
             .append("text")
             .text(function(d) { return d.title; })
@@ -261,6 +263,12 @@ class BrowserVis {
                     return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
                 }
                 
+            })
+            .on("click",function(d) {
+                var index = zoomData.indexOf(d);
+                console.log(index);
+                console.log("hey");
+                get_hello(index);
             });
 
         let acc = 0;
@@ -556,7 +564,13 @@ class BrowserVis {
                 moveBooks();
             }
                 
-            }         
+            }
+            
+        
+        function bookviewCall(d) {
+            console.log("hello world");
+            console.log(d.id);
+        }
         }
     
     

@@ -34,13 +34,13 @@
 <!--ajax functionality for the detailed book info popup-->
 <!--just trying to test some things here-->
 <script>
-  function get_hello() {
+  function get_hello(book_id) {
       //console.log("we made it here")
       //var id = this.$('#id');
-      //console.log(id)
+      //console.log(book_id)
       $.ajax({
           url: "ajax/bookview.html",
-          //data: {id : id},
+          data: {"book_id" : book_id},
           success: function (data) {
               generic_view(data);
           }
@@ -51,6 +51,7 @@
   function generic_view(data) {
       console.log(data);
       //console.log(id);
+      //console.log("this is the book id: " + book_id);
       var js_dialog;
       var dialog_title = "Book info";
       js_dialog = $('<div>').dialog({
