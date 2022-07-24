@@ -197,7 +197,7 @@ class BrowserVis {
     //console.log(thisData);
     
     let moveData = thisData;
-    console.log(zoomData);
+    //console.log(zoomData);
     //Let's add some spines
         var barLines = canvas.selectAll("rect.bar")
             .data(thisData)
