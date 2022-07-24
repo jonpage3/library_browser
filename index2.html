@@ -29,8 +29,39 @@
 
 <script>
   var vis = new BrowserVis("browser_vis");
+</script>
 
-
+<!--ajax functionality for the detailed book info popup-->
+<script>
+  function get_hello(book_id) {
+      
+      $.ajax({
+          url: "ajax/bookview.php?book_id=" + book_id,
+          success: function (data) {
+              generic_view(data);
+          }
+          
+      }).done(function () {
+        $(this).addClass("done");
+    });
+  }
+  
+  function generic_view(data) {
+      
+      var js_dialog;
+      var dialog_title = "Book info";
+      js_dialog = $('<div>').dialog({
+          modal: true,
+          open: function () {
+              $(this).html(data);
+          },
+          draggable: true,
+          height: 500,
+          width: 800,
+          title: dialog_title
+      });
+      console.log(js_dialog);
+  }
 </script>
 </div>
 </body>
