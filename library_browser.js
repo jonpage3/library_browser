@@ -1,12 +1,19 @@
 class BrowserVis {
-    constructor(svg_id) {
+    constructor(svg_id, filter, options) {
         this.url = "book_data.csv";
         this.svg_id = svg_id;
 
         this.height = 500;
         this.width = 1200;
         // Load the data and process it as needed.
-        this.loadAndPrepare();
+        //this.loadAndPrepare();
+
+        if (filter == null) {
+            this.loadAndPrepare();
+        }
+        else {
+            this.loadFiltered(options);
+        }
 
     }
 
@@ -26,6 +33,39 @@ class BrowserVis {
         }).then(function(items) {
             //console.log(items);
             thisvis.render(items,thisvis.width,thisvis.height);
+        })
+    }
+
+    loadFiltered(options) {
+        let thisvis = this;
+
+        
+        d3.csv(this.url, function(d) {
+            //console.log(d)
+            return {
+                // Convert text values to other types as needed.
+                callnum: d.callnum,
+                title: d.title,
+                clean_height: d.clean_height,
+                clean_length: d.clean_length,
+                clean_date: d.clean_date
+            }
+        }).then(function(items) {
+            //console.log(options)
+            let title = options.title;
+            title = title.toLowerCase();
+            //console.log(title);
+            let filtered_items = [];
+            if (title.length > 0) {
+                items.forEach(function(i){
+                    var item_title = i.title;
+                    item_title = item_title.toLowerCase();
+                    if (item_title.includes(title)){
+                        filtered_items.push(i);
+                    }
+                })
+            }
+            thisvis.render(filtered_items,thisvis.width,thisvis.height);
         })
     }
 
@@ -200,9 +240,11 @@ class BrowserVis {
     //console.log(zoomData);
     //Let's add some spines
         var barLines = canvas.selectAll("rect.bar")
-            .data(thisData)
-            .enter()
-            .append("a")
+            .data(thisData);
+        
+        barLines.exit().remove();
+
+        barLines.enter().append("a")
             //.attr("href","javascript:void(0);")
             .attr("href",function(d) {return "library_browser/bookview.html" + "?book_id=" +d.id;})
             .attr("id",function(d){return zoomData.indexOf(d);})
@@ -227,6 +269,7 @@ class BrowserVis {
             .attr("booktitle",function(d){return d.title;})
             .style("fill", function(d){return d.color})
             //.on("click",function(d) {return bookviewCall(d)});
+            .exit().remove();
         
 
         //now time to add the title to the spines
