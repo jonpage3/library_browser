@@ -70,7 +70,7 @@ class BrowserVis {
     }
 
     render(data,width,height) {
-
+        d3.selectAll("#canvas").remove();
         let x, y, gX, gY, xAxis, yAxis;
         var idList = 1;
         var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -242,8 +242,6 @@ class BrowserVis {
         var barLines = canvas.selectAll("rect.bar")
             .data(thisData);
         
-        barLines.exit().remove();
-
         barLines.enter().append("a")
             //.attr("href","javascript:void(0);")
             .attr("href",function(d) {return "library_browser/bookview.html" + "?book_id=" +d.id;})
@@ -269,7 +267,6 @@ class BrowserVis {
             .attr("booktitle",function(d){return d.title;})
             .style("fill", function(d){return d.color})
             //.on("click",function(d) {return bookviewCall(d)});
-            .exit().remove();
         
 
         //now time to add the title to the spines
@@ -309,8 +306,6 @@ class BrowserVis {
             })
             .on("click",function(d) {
                 var index = zoomData.indexOf(d);
-                console.log(index);
-                console.log("hey");
                 get_hello(index);
             });
 
@@ -340,12 +335,7 @@ class BrowserVis {
         
 
 
-
         function zoomed (event){
-            //console.log("hello world!");
-            //console.log(x);
-            //console.log(xAxis);
-            //gX.call(xAxis.scale(event.transform.rescaleX(x)));
             var new_x = event.transform.rescaleX(x);
 
             d3.select("#canvas").selectAll("rect.bar")
@@ -394,8 +384,9 @@ class BrowserVis {
         }
 
 
-        function moveBooks() {
-            console.log(acc);
+        function moveBooks(acc) {
+            
+            //console.log(acc);
             /**
              * need some functionaliy to figure out if the user has used the Zoom feature
              * 
@@ -515,7 +506,8 @@ class BrowserVis {
             });
         }
         
-        function moveBooksForward() {
+        function moveBooksForward(acc) {
+
             let x_values = [];
             d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
                 //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
@@ -532,16 +524,16 @@ class BrowserVis {
                     break
                 }
             }
-            console.log(x_values);
-            console.log(acc);
+            
             acc +=1;
             console.log(acc);
-            moveBooks();
+            moveBooks(acc);
             
         }
 
 
-        function moveBooksBack() {
+        function moveBooksBack(acc) {
+            //canvas.exit().remove();
             let x_values = [];
             d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
                 //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
@@ -559,7 +551,6 @@ class BrowserVis {
                 }
             }
             acc -= 1;
-            console.log(x_values);
             console.log(acc);
             if (acc < 0){
                 acc = 0;
@@ -604,16 +595,19 @@ class BrowserVis {
                 
             }
             else {
-                moveBooks();
+                moveBooks(acc);
             }
                 
             }
             
-        
+        /*
         function bookviewCall(d) {
             console.log("hello world");
             console.log(d.id);
-        }
+        }*/
+        
+    
+
         }
     
     
