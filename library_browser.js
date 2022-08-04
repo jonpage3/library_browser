@@ -310,7 +310,7 @@ class BrowserVis {
             });
 
         let acc = 0;
-        
+        d3.selectAll("circle").remove();
         var button = svg.append("circle")
             .attr("cx",100)
             .attr("cy",500)
