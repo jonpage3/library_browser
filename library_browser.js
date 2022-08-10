@@ -28,7 +28,9 @@ class BrowserVis {
                 title: d.title,
                 clean_height: d.clean_height,
                 clean_length: d.clean_length,
-                clean_date: d.clean_date
+                clean_date: d.clean_date,
+                color: d.color,
+                id: d.id
             }
         }).then(function(items) {
             //console.log(items);
@@ -48,7 +50,9 @@ class BrowserVis {
                 title: d.title,
                 clean_height: d.clean_height,
                 clean_length: d.clean_length,
-                clean_date: d.clean_date
+                clean_date: d.clean_date,
+                color: d.color,
+                id: d.id
             }
         }).then(function(items) {
             //console.log(options)
@@ -72,8 +76,8 @@ class BrowserVis {
     render(data,width,height) {
         d3.selectAll("#canvas").remove();
         let x, y, gX, gY, xAxis, yAxis;
-        var idList = 1;
-        var color = d3.scaleOrdinal(d3.schemeCategory10);
+        //var idList = 1;
+        //var color = d3.scaleOrdinal(d3.schemeCategory10);
         var thisData = null;
         var line;
         var settings = {
@@ -94,9 +98,10 @@ class BrowserVis {
                 d['accum_length'] += data[n]['accum_length'];
             }
         })
+        /*
         thisData.forEach(function(d){
             d['id'] = data.indexOf(d)
-        })
+        })*/
         //console.log(thisData);
         let zoomData = thisData;
         //console.log(thisData);
@@ -194,7 +199,7 @@ class BrowserVis {
         gY = canvas.append("g").attr("class","axis axis--y");//.call(yAxis);
 
         d3.selectAll(".axis--y > g.tick > line").attr("x2",canvasWidth).style("stroke","lightgrey");
-
+/*
         // Adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
         // http://bl.ocks.org/jdarling/06019d16cb5fd6795edf
         var randomColor = (function(){
@@ -235,7 +240,7 @@ class BrowserVis {
 
     thisData.forEach(function(d){var color = randomColor; d["color"] = color();});
     //console.log(thisData);
-    
+*/
     let moveData = thisData;
     //console.log(zoomData);
     //Let's add some spines
@@ -245,7 +250,7 @@ class BrowserVis {
         barLines.enter().append("a")
             //.attr("href","javascript:void(0);")
             .attr("href",function(d) {return "library_browser/bookview.html" + "?book_id=" +d.id;})
-            .attr("id",function(d){return zoomData.indexOf(d);})
+            .attr("id",function(d){return d.id;})
             .attr("onclick","get_hello(this.id);return false;")
             .append("rect")
             .attr("class","bar")

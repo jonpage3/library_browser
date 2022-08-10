@@ -4,7 +4,6 @@ echo "<script src='https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/jquery-ui.js
 echo "<link rel='stylesheet' href='https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/themes/cupertino/jquery-ui.css'></link>";
 
 $book_id = $_GET['book_id'];
-
 echo "<div id=book_view></div>";
 
 //https://www.php.net/manual/en/function.str-getcsv.php#117692
@@ -13,7 +12,11 @@ array_walk($csv, function(&$a) use ($csv) {
       $a = array_combine($csv[0], $a);
 });
 array_shift($csv); # remove column header
-$book = $csv[$book_id];
+//print_r($csv);
+
+$books = array_column($csv, null, 'id');
+//print_r($books);
+$book = $books[$book_id];
 $output = "";
 
 $output .= "<br>Title: ". $book['title'] . " " . $book['title2'] ."</br>";
