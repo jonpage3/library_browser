@@ -23,12 +23,21 @@
 
 
 <p>Library Browser</p>
+
+<form action="ajax/stacks_filter.php">
+  <label for="title">Title:</label><br>
+  <input type="text" id="title" name="title"><br>
+  <label for="author">Author:</label><br>
+  <input type="text" id="author" name="author">
+  <input type="submit" value="Submit">
+</form> 
+
 <div text-align="center">
-  <svg viewBox="0 0 1500 700" preserveAspectRatio="xMidYMid meet"id="browser_vis">
+  <svg viewBox="0 0 1500 700" preserveAspectRatio="xMidYMid meet" id="browser_vis">
   </svg>
 
 <script>
-  var vis = new BrowserVis("browser_vis");
+  var vis = new BrowserVis("browser_vis",null,null);
 </script>
 
 <!--ajax functionality for the detailed book info popup-->
@@ -60,8 +69,41 @@
           width: 800,
           title: dialog_title
       });
-      console.log(js_dialog);
+      //console.log(js_dialog);
   }
+
+  //basic stacks data filtering
+  $(document).ready(function () {
+  $("form").submit(function (event) {
+    var formData = {
+      title: $("#title").val(),
+      author: $("#author").val(),
+    };
+    /*
+    console.log(formData);
+    $.ajax({
+      //type: "POST",
+      url: "ajax/stacks_filter.php?title=" +formData.title + "&author="+formData.author,
+      //data: formData,
+      dataType: "json",
+      encode: true,
+      success: function (data) {
+              filter_view(data);
+          }
+    }).done(function (data) {
+      console.log(data);
+    });
+    
+    function filter_view(data) {
+    console.log(data);
+    
+  }*/
+    //attempt to do filter utilizing existing js
+    var vis = new BrowserVis("browser_vis",1,formData);
+    event.preventDefault();
+  });
+});
+
 </script>
 </div>
 </body>

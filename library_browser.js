@@ -1,12 +1,19 @@
 class BrowserVis {
-    constructor(svg_id) {
+    constructor(svg_id, filter, options) {
         this.url = "book_data.csv";
         this.svg_id = svg_id;
 
         this.height = 500;
         this.width = 1200;
         // Load the data and process it as needed.
-        this.loadAndPrepare();
+        //this.loadAndPrepare();
+
+        if (filter == null) {
+            this.loadAndPrepare();
+        }
+        else {
+            this.loadFiltered(options);
+        }
 
     }
 
@@ -21,7 +28,9 @@ class BrowserVis {
                 title: d.title,
                 clean_height: d.clean_height,
                 clean_length: d.clean_length,
-                clean_date: d.clean_date
+                clean_date: d.clean_date,
+                color: d.color,
+                id: d.id
             }
         }).then(function(items) {
             //console.log(items);
@@ -29,11 +38,46 @@ class BrowserVis {
         })
     }
 
-    render(data,width,height) {
+    loadFiltered(options) {
+        let thisvis = this;
 
+        
+        d3.csv(this.url, function(d) {
+            //console.log(d)
+            return {
+                // Convert text values to other types as needed.
+                callnum: d.callnum,
+                title: d.title,
+                clean_height: d.clean_height,
+                clean_length: d.clean_length,
+                clean_date: d.clean_date,
+                color: d.color,
+                id: d.id
+            }
+        }).then(function(items) {
+            //console.log(options)
+            let title = options.title;
+            title = title.toLowerCase();
+            //console.log(title);
+            let filtered_items = [];
+            if (title.length > 0) {
+                items.forEach(function(i){
+                    var item_title = i.title;
+                    item_title = item_title.toLowerCase();
+                    if (item_title.includes(title)){
+                        filtered_items.push(i);
+                    }
+                })
+            }
+            thisvis.render(filtered_items,thisvis.width,thisvis.height);
+        })
+    }
+
+    render(data,width,height) {
+        d3.selectAll("#canvas").remove();
         let x, y, gX, gY, xAxis, yAxis;
-        var idList = 1;
-        var color = d3.scaleOrdinal(d3.schemeCategory10);
+        //var idList = 1;
+        //var color = d3.scaleOrdinal(d3.schemeCategory10);
         var thisData = null;
         var line;
         var settings = {
@@ -54,9 +98,10 @@ class BrowserVis {
                 d['accum_length'] += data[n]['accum_length'];
             }
         })
+        /*
         thisData.forEach(function(d){
             d['id'] = data.indexOf(d)
-        })
+        })*/
         //console.log(thisData);
         let zoomData = thisData;
         //console.log(thisData);
@@ -154,7 +199,7 @@ class BrowserVis {
         gY = canvas.append("g").attr("class","axis axis--y");//.call(yAxis);
 
         d3.selectAll(".axis--y > g.tick > line").attr("x2",canvasWidth).style("stroke","lightgrey");
-
+/*
         // Adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
         // http://bl.ocks.org/jdarling/06019d16cb5fd6795edf
         var randomColor = (function(){
@@ -195,17 +240,17 @@ class BrowserVis {
 
     thisData.forEach(function(d){var color = randomColor; d["color"] = color();});
     //console.log(thisData);
-    
+*/
     let moveData = thisData;
     //console.log(zoomData);
     //Let's add some spines
         var barLines = canvas.selectAll("rect.bar")
-            .data(thisData)
-            .enter()
-            .append("a")
+            .data(thisData);
+        
+        barLines.enter().append("a")
             //.attr("href","javascript:void(0);")
             .attr("href",function(d) {return "library_browser/bookview.html" + "?book_id=" +d.id;})
-            .attr("id",function(d){return zoomData.indexOf(d);})
+            .attr("id",function(d){return d.id;})
             .attr("onclick","get_hello(this.id);return false;")
             .append("rect")
             .attr("class","bar")
@@ -266,13 +311,11 @@ class BrowserVis {
             })
             .on("click",function(d) {
                 var index = zoomData.indexOf(d);
-                console.log(index);
-                console.log("hey");
                 get_hello(index);
             });
 
         let acc = 0;
-        
+        d3.selectAll("circle").remove();
         var button = svg.append("circle")
             .attr("cx",100)
             .attr("cy",500)
@@ -297,12 +340,7 @@ class BrowserVis {
         
 
 
-
         function zoomed (event){
-            //console.log("hello world!");
-            //console.log(x);
-            //console.log(xAxis);
-            //gX.call(xAxis.scale(event.transform.rescaleX(x)));
             var new_x = event.transform.rescaleX(x);
 
             d3.select("#canvas").selectAll("rect.bar")
@@ -351,8 +389,9 @@ class BrowserVis {
         }
 
 
-        function moveBooks() {
-            console.log(acc);
+        function moveBooks(acc) {
+            
+            //console.log(acc);
             /**
              * need some functionaliy to figure out if the user has used the Zoom feature
              * 
@@ -472,7 +511,8 @@ class BrowserVis {
             });
         }
         
-        function moveBooksForward() {
+        function moveBooksForward(acc) {
+
             let x_values = [];
             d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
                 //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
@@ -489,16 +529,16 @@ class BrowserVis {
                     break
                 }
             }
-            console.log(x_values);
-            console.log(acc);
+            
             acc +=1;
             console.log(acc);
-            moveBooks();
+            moveBooks(acc);
             
         }
 
 
-        function moveBooksBack() {
+        function moveBooksBack(acc) {
+            //canvas.exit().remove();
             let x_values = [];
             d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
                 //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
@@ -516,7 +556,6 @@ class BrowserVis {
                 }
             }
             acc -= 1;
-            console.log(x_values);
             console.log(acc);
             if (acc < 0){
                 acc = 0;
@@ -561,16 +600,19 @@ class BrowserVis {
                 
             }
             else {
-                moveBooks();
+                moveBooks(acc);
             }
                 
             }
             
-        
+        /*
         function bookviewCall(d) {
             console.log("hello world");
             console.log(d.id);
-        }
+        }*/
+        
+    
+
         }
     
     
