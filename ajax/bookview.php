@@ -19,16 +19,16 @@ $books = array_column($csv, null, 'id');
 $book = $books[$book_id];
 $output = "";
 
-$output .= "<br>Title: ". $book['title'] . " " . $book['title2'] ."</br>";
-$output .= "<br>Author: ". $book['author'] . "</br>";
-$output .= "<br>Call Number: ". $book['callnum'] . "</br>";
-$output .= "<br>Length: " . $book['clean_length'] . " pages</br>";
-$output .= "<br>Publication info: ". $book['pub_location'] . " ". $book['publisher']. "</br>";
-$output .= "<br>Date: ". $book['date'] ."</br>";
+$output .= "<br><b>Title:</b> ". $book['title'] . " " . $book['title2'] ."</br>";
+$output .= "<br><b>Author:</b> ". $book['author'] . "</br>";
+$output .= "<br><b>Call Number:</b> ". $book['callnum'] . "</br>";
+$output .= "<br><b>Length:</b>" . $book['clean_length'] . " pages</br>";
+$output .= "<br><b>Publication info:</b> ". $book['pub_location'] . " ". $book['publisher']. "</br>";
+$output .= "<br><b>Date:</b> ". $book['date'] ."</br>";
 if (strlen($book['contents'])>0){
-    $output .= "<br>Contents: ". $book['contents'] ."</br>";
+    $output .= "<br><b>Contents:</b> ". $book['contents'] ."</br>";
 }
 if (strlen($book['subjects'] . $book['subjects2']) > 0) {
-    $output .= "<br>Subjects: ". $book['subjects'] ." " . $book['subjects2'] ."</br>";
+    $output .= "<br><b>Subjects:</b> ". $book['subjects'] ." " . $book['subjects2'] ."</br>";
 }
 echo($output);
