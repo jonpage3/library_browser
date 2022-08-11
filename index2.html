@@ -10,6 +10,41 @@
   <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/jquery-ui.js"></script>
   <link rel="stylesheet "href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/themes/cupertino/jquery-ui.css"></link>
 
+  <link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
+
+<style>
+  body {
+    background-image: url('book_stack.jpg');
+    background-size: cover;
+    
+  }
+
+  .search-form {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: white;
+    font-size: .8vw;
+    position: static;
+    left: 20%;
+    top: 10%;
+  }
+
+  .search-button {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: 	#4B9CD3;
+    font-size: 0.8vw;
+    position: static;
+  }
+
+  #brand {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    /*font-style: italic;*/
+    font-size: 1vw;
+    color: 	#4B9CD3;
+    text-align: "center";
+    position: static;
+    left: 20%;
+  }
+</style>
 
 
 </head>
@@ -21,18 +56,20 @@
     }
   </style>-->
 
+<h1 id="brand">flanerie:<br>an online 'shelf-view' catalog</h1>
 
-<p>Library Browser</p>
+<p class="search-form">Search the catalog</p>
 
-<form action="ajax/stacks_filter.php">
+<form class="search-form" action="ajax/stacks_filter.php">
   <label for="title">Title:</label><br>
   <input type="text" id="title" name="title"><br>
   <label for="author">Author:</label><br>
   <input type="text" id="author" name="author">
-  <input type="submit" value="Submit">
+  <input class="search-button" type="submit" value="Submit">
 </form> 
 
 <div text-align="center">
+
   <svg viewBox="0 0 1500 700" preserveAspectRatio="xMidYMid meet" id="browser_vis">
   </svg>
 

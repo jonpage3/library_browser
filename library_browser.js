@@ -287,9 +287,10 @@ class BrowserVis {
             .data(thisData)
             .enter()
             .append("a")
-            //.attr("xlink:href","javascript:void(0);")
-            //.attr("onclick","get_hello();return false;")
-            .attr("id",function(d){return zoomData.indexOf(d);})
+            .attr("clip-path","url(#clip)")
+            .attr("href",function(d) {return "library_browser/bookview.html" + "?book_id=" +d.id;})
+            .attr("id",function(d){return d.id;})
+            .attr("onclick","get_hello(this.id);return false;")
             .append("text")
             .text(function(d) { return d.title; })
             .attr("x", function(d) {
@@ -322,10 +323,6 @@ class BrowserVis {
                     return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
                 }
                 
-            })
-            .on("click",function(d) {
-                var index = zoomData.indexOf(d);
-                get_hello(index);
             });
 
         let acc = 0;
