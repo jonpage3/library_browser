@@ -302,7 +302,14 @@ class BrowserVis {
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-40;})
-            .attr("font-size" , "12px")
+            .attr("font-size" , function(d) {
+                if (d.clean_length > 100){
+                    return "12px";
+                }
+                else {
+                    return "6px";
+                }
+            })
             .attr("fill" , "white")
             .attr("font-family" , "sans-serif")
             //.attr("text-anchor", "middle")
@@ -379,7 +386,14 @@ class BrowserVis {
                         return new_x((d.accum_length - d.clean_length/2)*.0075);
                     }
                 })
-                .attr("font-size" , "12px")
+                .attr("font-size" , function(d) {
+                    if (d.clean_length > 100){
+                        return "12px";
+                    }
+                    else {
+                        return "6px";
+                    }
+                })
                 .attr("fill" , "white")
                 .attr("font-family" , "sans-serif")
                 .attr("transform",function(d) {
@@ -489,7 +503,14 @@ class BrowserVis {
                     }
                 }
             })
-            .attr("font-size" , "12px")
+            .attr("font-size" , function(d) {
+                if (d.clean_length > 100){
+                    return "12px";
+                }
+                else {
+                    return "6px";
+                }
+            })
             .attr("fill" , "white")
             .attr("font-family" , "sans-serif")
             .attr("transform",function(d) {
