@@ -35,7 +35,7 @@ class BrowserVis {
             }
         }).then(function(items) {
             //console.log(items);
-            thisvis.render(items,thisvis.width,thisvis.height);
+            thisvis.render(items,thisvis.width,thisvis.height,items);
         })
     }
 
@@ -49,6 +49,7 @@ class BrowserVis {
                 // Convert text values to other types as needed.
                 callnum: d.callnum,
                 title: d.title,
+                title2: d.title2,
                 clean_height: d.clean_height,
                 clean_length: d.clean_length,
                 clean_date: d.clean_date,
@@ -66,7 +67,7 @@ class BrowserVis {
             let filtered_items = [];
             if (title.length > 0 || author.length > 0) {
                 items.forEach(function(i){
-                    var item_title = i.title;
+                    var item_title = i.title + i.title2;
                     var item_author = i.clean_author;
                     //console.log(item_author);
                     item_title = item_title.toLowerCase();
@@ -76,11 +77,11 @@ class BrowserVis {
                 })
             }
             console.log(filtered_items);
-            thisvis.render(filtered_items,thisvis.width,thisvis.height);
+            thisvis.render(filtered_items,thisvis.width,thisvis.height,items);
         })
     }
 
-    render(data,width,height) {
+    render(data,width,height,total_data) {
         d3.selectAll("#canvas").remove();
         let x, y, gX, gY, xAxis, yAxis;
         //var idList = 1;
@@ -120,8 +121,8 @@ class BrowserVis {
         var canvasHeight = height -padding.top - padding.bottom;
         var canvasWidth = width -padding.left -padding.right;
 
-        var eMaxY = d3.max(data,function(d){return +d.clean_height;});
-        var eMinY = d3.min(data,function(d){return +d.clean_height;});
+        var eMaxY = d3.max(total_data,function(d){return +d.clean_height;});
+        var eMinY = d3.min(total_data,function(d){return +d.clean_height;});
         var eMaxX = d3.max(thisData,function(d) {return +d.accum_length;});
         var eMinX = 0;
         //console.log(eMaxY);
