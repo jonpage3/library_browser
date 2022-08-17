@@ -349,8 +349,8 @@ class BrowserVis {
 
         //null here disables mouse wheel zooming
         svg.call(zoom).on("wheel.zoom",null);
-        
-
+        d3.select("svg").on("dblclick.zoom",null);
+        //canvas.call(zoom).on("click.zoom",null)
 
         function zoomed (event){
             var new_x = event.transform.rescaleX(x);
