@@ -328,19 +328,44 @@ class BrowserVis {
 
         let acc = 0;
         d3.selectAll("circle").remove();
+        var rect_canvas = svg.append("rect")
+            .attr("x",600)
+            .attr("y",520)
+            .attr("height",140)
+            .attr("width",200)
+            .attr("fill","#F8F0E3");
         var button = svg.append("circle")
-            .attr("cx",100)
-            .attr("cy",500)
+            .attr("cx",650)
+            .attr("cy",575)
             .attr("r",9)
             .style("fill","green")
             .on("click",moveBooksForward);
 
         var button_reverse = svg.append('circle')
-            .attr("cx",100)
-            .attr("cy",600)
+            .attr("cx",650)
+            .attr("cy",625)
             .attr("r",9)
             .style("fill","red")
             .on("click",moveBooksBack);
+        
+        svg.append('text')
+            .attr("x",650)
+            .attr("y",550)
+            .attr("font-size","12px")
+            .text("Click to move:");
+
+        var button_help = svg.append('text')
+            .attr("x",675)
+            .attr("y",580)
+            .text("<---")
+            .attr("font","bold")
+            .attr("font-size","16px");
+        
+        var button_help = svg.append('text')
+            .attr("x",675)
+            .attr("y",630)
+            .text("--->")
+            .attr("font-size","16px");
             
             
 
