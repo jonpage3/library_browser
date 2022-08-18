@@ -59,7 +59,7 @@ class BrowserVis {
                 keyword_string: d.keyword_string
             }
         }).then(function(items) {
-            console.log(options)
+            //console.log(options)
             let title = options.title;
             title = title.toLowerCase();
             let author = options.author;
@@ -72,7 +72,7 @@ class BrowserVis {
             if (keyword.length > 0) {
                 keyword = keyword.replace(/\s+/g, '');
                 keyword = keyword.toLowerCase();
-                console.log(keyword);
+                //console.log(keyword);
                 items.forEach(function(i){
                     var keyword_string = i.keyword_string;
                     if (keyword_string.includes(keyword)) {
@@ -94,7 +94,7 @@ class BrowserVis {
                 })
             }
             }
-            console.log(filtered_items);
+            //console.log(filtered_items);
             thisvis.render(filtered_items,thisvis.width,thisvis.height,items);
         })
     }
@@ -311,7 +311,19 @@ class BrowserVis {
             .attr("id",function(d){return d.id;})
             .attr("onclick","get_hello(this.id);return false;")
             .append("text")
-            .text(function(d) { return d.title; })
+            .text(function(d) { 
+                //console.log(y(d.clean_height))
+                let title = d.title;
+                //console.log(y(title.length));
+                //if ((y(d.clean_height) - y(title.length)) > ((canvasHeight-y(d.clean_height)) +100))
+                //{console.log(title);};
+                if ((y(d.clean_height) - y(title.length)) > ((canvasHeight-y(d.clean_height)) +100)){
+                    title = title.slice(0,title.length/2) + "...";
+                    return title
+                } else {
+                return d.title; 
+                }
+            })
             .attr("x", function(d) {
                 if (zoomData.indexOf(d) == 0) {
 
@@ -602,7 +614,7 @@ class BrowserVis {
             }
             
             acc +=1;
-            console.log(acc);
+            //console.log(acc);
             moveBooks(acc);
             
         }
@@ -627,7 +639,7 @@ class BrowserVis {
                 }
             }
             acc -= 1;
-            console.log(acc);
+            //console.log(acc);
             if (acc < 0){
                 acc = 0;
                 throw "You're at the beginning of this section of the stacks!";
