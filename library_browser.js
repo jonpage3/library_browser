@@ -55,7 +55,8 @@ class BrowserVis {
                 clean_date: d.clean_date,
                 color: d.color,
                 id: d.id,
-                clean_author: d.clean_author
+                clean_author: d.clean_author,
+                keyword_string: d.keyword_string
             }
         }).then(function(items) {
             console.log(options)
@@ -63,8 +64,24 @@ class BrowserVis {
             title = title.toLowerCase();
             let author = options.author;
             author = author.toLowerCase();
-            //console.log(title);
+
+            let keyword = options.keyword;
+
             let filtered_items = [];
+
+            if (keyword.length > 0) {
+                keyword = keyword.replace(/\s+/g, '');
+                keyword = keyword.toLowerCase();
+                console.log(keyword);
+                items.forEach(function(i){
+                    var keyword_string = i.keyword_string;
+                    if (keyword_string.includes(keyword)) {
+                        filtered_items.push(i);
+                    }
+                })
+            }
+            
+            else {
             if (title.length > 0 || author.length > 0) {
                 items.forEach(function(i){
                     var item_title = i.title + i.title2;
@@ -75,6 +92,7 @@ class BrowserVis {
                         filtered_items.push(i);
                     }
                 })
+            }
             }
             console.log(filtered_items);
             thisvis.render(filtered_items,thisvis.width,thisvis.height,items);
