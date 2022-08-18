@@ -339,6 +339,7 @@ class BrowserVis {
             .attr("cy",525)
             .attr("r",6)
             .style("fill","green")
+            .style("stroke","black")
             .on("click",moveBooksForward);
 
         var button_reverse = svg.append('circle')
@@ -346,6 +347,7 @@ class BrowserVis {
             .attr("cy",550)
             .attr("r",6)
             .style("fill","red")
+            .style("stroke","black")
             .on("click",moveBooksBack);
         
         svg.append('text')
