@@ -329,41 +329,41 @@ class BrowserVis {
         let acc = 0;
         d3.selectAll("circle").remove();
         var rect_canvas = svg.append("rect")
-            .attr("x",600)
-            .attr("y",520)
-            .attr("height",140)
-            .attr("width",200)
+            .attr("x",625)
+            .attr("y",500)
+            .attr("height",75)
+            .attr("width",150)
             .attr("fill","#F8F0E3");
         var button = svg.append("circle")
             .attr("cx",650)
-            .attr("cy",575)
-            .attr("r",9)
+            .attr("cy",525)
+            .attr("r",6)
             .style("fill","green")
             .on("click",moveBooksForward);
 
         var button_reverse = svg.append('circle')
             .attr("cx",650)
-            .attr("cy",625)
-            .attr("r",9)
+            .attr("cy",550)
+            .attr("r",6)
             .style("fill","red")
             .on("click",moveBooksBack);
         
         svg.append('text')
             .attr("x",650)
-            .attr("y",550)
-            .attr("font-size","12px")
+            .attr("y",510)
+            .attr("font-size","8px")
             .text("Click to move:");
 
         var button_help = svg.append('text')
             .attr("x",675)
-            .attr("y",580)
+            .attr("y",530)
             .text("<---")
             .attr("font","bold")
             .attr("font-size","16px");
         
         var button_help = svg.append('text')
             .attr("x",675)
-            .attr("y",630)
+            .attr("y",555)
             .text("--->")
             .attr("font-size","16px");
             
