@@ -21,7 +21,7 @@
 
   .search-form {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    color: white;
+    color: #4B9CD3;
     font-size: .8vw;
     position: static;
     left: 20%;
@@ -42,7 +42,15 @@
     color: 	#4B9CD3;
     text-align: "center";
     position: static;
-    left: 20%;
+    /*left: 20%;*/
+  }
+
+  .box {
+    /*margin:0 auto;*/
+    width:300px;
+    padding:30px;
+    background:#F8F0E3;
+    border:2px solid #333;
   }
 </style>
 
@@ -55,10 +63,10 @@
       margin-left:auto; margin-right:auto; display:block; width: 1500px; height: 1500px;
     }
   </style>-->
+<div class="box">
+<h1 id="brand">UNC Library:<br>Shelf Browser</h1>
 
-<h1 id="brand">flanerie:<br>an online 'shelf-view' catalog</h1>
-
-<p class="search-form">Search the catalog</p>
+<p id="brand">Search the catalog</p>
 
 <form class="search-form" action="ajax/stacks_filter.php">
   <label for="title">Title:</label><br>
@@ -67,6 +75,7 @@
   <input type="text" id="author" name="author">
   <input class="search-button" type="submit" value="Submit">
 </form> 
+</div>
 
 <div text-align="center">
 
