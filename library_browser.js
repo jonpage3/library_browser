@@ -35,7 +35,7 @@ class BrowserVis {
             }
         }).then(function(items) {
             //console.log(items);
-            thisvis.render(items,thisvis.width,thisvis.height,items);
+            thisvis.render(items,thisvis.width,thisvis.height,items,null);
         })
     }
 
@@ -94,18 +94,34 @@ class BrowserVis {
                 })
             }
             }
-            //console.log(filtered_items);
-            thisvis.render(filtered_items,thisvis.width,thisvis.height,items);
+
+            //show all books if nothing search for
+            let total_searched = options.author + options.title + options.keyword;
+            if (total_searched.length == 0) {
+                items.forEach(function(i){
+                    filtered_items.push(i);
+                })
+            }
+
+            //console.log(filtered_items)
+            let author_start = options.author_start;
+            if (author_start.length > 0) {
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,author_start)
+            }
+            else {
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,null);
+            }
         })
     }
 
-    render(data,width,height,total_data) {
+    render(data,width,height,total_data,author_start) {
         d3.selectAll("#canvas").remove();
         let x, y, gX, gY, xAxis, yAxis;
         //var idList = 1;
         //var color = d3.scaleOrdinal(d3.schemeCategory10);
         var thisData = null;
         var line;
+        var x_start = 0;
         var settings = {
             targets: [],
             detail: {
@@ -124,6 +140,21 @@ class BrowserVis {
                 d['accum_length'] += data[n]['accum_length'];
             }
         })
+        console.log(author_start);
+        if (author_start != null) {
+            thisData.every(function(d) {
+                console.log(d['clean_author']);
+                let author = d['clean_author'];
+                if (author.includes(author_start)){
+                    x_start = d['accum_length'] - d['clean_length'];
+                    console.log(x_start);
+                    return false;
+                }
+                return true;
+            })
+        }
+
+        console.log(x_start);
         /*
         thisData.forEach(function(d){
             d['id'] = data.indexOf(d)
@@ -282,6 +313,7 @@ class BrowserVis {
             .attr("class","bar")
             .attr("clip-path","url(#clip)")
             .attr("x", function(d) {
+                if (x_start == 0) {
                 if (zoomData.indexOf(d) == 0) {
 
                     return 0;
@@ -289,6 +321,15 @@ class BrowserVis {
                 else{
                     return x((d.accum_length - d.clean_length)*.0075);
                 }
+            }
+            else {
+                if (((d.accum_length - d.clean_length) - x_start) == 0 ){
+                    return 0;
+                }
+                else {
+                return x(((d.accum_length - d.clean_length)- x_start)*0.0075)
+                }
+            }
             })
             .attr("y",function(d){return y(d.clean_height)-100;})
             .attr("width",function(d) {return x(d.clean_length*(.0075));})
@@ -326,12 +367,24 @@ class BrowserVis {
                 }
             })
             .attr("x", function(d) {
+                if (x_start == 0) {
                 if (zoomData.indexOf(d) == 0) {
 
                     return x(d.clean_length/2*.0075);
                 }
-                else{
+                else {
                     return x((d.accum_length - d.clean_length/2)*.0075);
+                }
+                }
+                else {
+                    
+                    if (((d.accum_length - d.clean_length) - x_start) == 0) {
+                        console.log(d.title);
+                        return x(d.clean_length/2*.0075);
+                    }
+                    else {
+                        return x(((d.accum_length - d.clean_length/2) - x_start)*.0075);
+                    }
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-40;})
@@ -347,6 +400,7 @@ class BrowserVis {
             .attr("font-family" , "sans-serif")
             //.attr("text-anchor", "middle")
             .attr("transform",function(d) {
+                if (x_start ==0) {
                 if (zoomData.indexOf(d) == 0) {
 
                     return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
@@ -354,7 +408,15 @@ class BrowserVis {
                 else{
                     return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
                 }
-                
+                }
+                else{
+                    if (((d.accum_length - d.clean_length) - x_start) == 0) {
+                        return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else {
+                        return "rotate(90,"+x((d.accum_length - d.clean_length/2 - x_start)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                    }
+                }
             });
 
         let acc = 0;

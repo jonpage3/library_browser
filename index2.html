@@ -86,6 +86,8 @@
   <input type="text" id="author" name="author">
   <label for="keyword">Keyword:</label>
   <input type="text" id="keyword" name="keyword"><br>
+  <label for="author-start">Start at:</label>
+  <input type="text" id="author-start" name="author-start" placeholder="author">
   <input class="search-button" type="submit" value="Submit">
 </form> 
 </div>
@@ -138,6 +140,7 @@
       title: $("#title").val(),
       author: $("#author").val(),
       keyword: $('#keyword').val(),
+      author_start: $('#author-start').val(),
     };
     /*
     console.log(formData);
