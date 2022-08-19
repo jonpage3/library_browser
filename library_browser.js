@@ -294,6 +294,7 @@ class BrowserVis {
             .attr("width",function(d) {return x(d.clean_length*(.0075));})
             .attr("height",function(d){return (canvasHeight-y(d.clean_height))+100;})
             //.attr("id",function(d){return zoomData.indexOf(d);})
+            .attr("rx","5")
             .attr("callnum",function(d){return d.callnum;})
             .attr("booktitle",function(d){return d.title;})
             .style("fill", function(d){return d.color})
