@@ -1,51 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Library Browser</title>
+  <meta charset="UTF-8">
+  <title>Library Browser</title>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="browser1.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/jquery-ui.js"></script>
-    <link rel="stylesheet "href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/themes/cupertino/jquery-ui.css"></link>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="library_browser.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/jquery-ui.js"></script>
+  <link rel="stylesheet "href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.13.1/themes/cupertino/jquery-ui.css"></link>
+
+  <link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
+
+<style>
+  body {
+    background-image: url('book_stack.jpg');
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    /*overflow: hidden;*/
+    
+  }
+
+  .search-form {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #4B9CD3;
+    font-size: .6vw;
+    position: relative;
+    /*left: 20%;*/
+    /*top: 10%;*/
+    display: flex;
+    flex-direction: column;
+    
+  }
+
+  .search-button {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: 	#4B9CD3;
+    font-size: 0.6vw;
+    position: static;
+  }
+
+  #brand {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    /*font-style: italic;*/
+    font-size: .6vw;
+    color: 	#4B9CD3;
+    text-align: "center";
+    position: static;
+    /*left: 20%;*/
+  }
+
+  .box {
+    /*margin:0 auto;*/
+    display: flex;
+    flex-direction: column;
+    width:10%;
+    
+    left: 10%;
+    padding:1%;
+    background:#F8F0E3;
+    border:2px solid #333;
+  }
+</style>
+
+
 </head>
 <body>
-<p>Library Browser</p>
-<svg id="browser_vis" style="width: 3000px; height: 600px;"></svg>
+  
+  <!--<style>
+    #browser_vis {
+      margin-left:auto; margin-right:auto; display:block; width: 1500px; height: 1500px;
+    }
+  </style>-->
+
+<div class="box">
+<h1 id="brand">UNC Library:<br>Shelf Browser</h1>
+
+<p id="brand">Search the catalog</p>
+
+<form class="search-form" action="ajax/stacks_filter.php">
+  <label for="title">Title:</label>
+  <input type="text" id="title" name="title">
+  <label for="author">Author:</label>
+  <input type="text" id="author" name="author">
+  <label for="keyword">Keyword:</label>
+  <input type="text" id="keyword" name="keyword"><br>
+  <input class="search-button" type="submit" value="Submit">
+</form> 
+</div>
+
+<div text-align="center">
+
+  <svg viewBox="0 0 1500 700" preserveAspectRatio="xMidYMid meet" id="browser_vis">
+  </svg>
 
 <script>
-    var vis = new BrowserVis("browser_vis");
-
+  var vis = new BrowserVis("browser_vis",null,null);
 </script>
+
 <!--ajax functionality for the detailed book info popup-->
-<!--just trying to test some things here-->
 <script>
-    function get_hello() {
-        console.log("we made it here")
-        $.ajax({
-            url: "ajax/index.html",
-            success: function (data) {
-                generic_view(data);
-            }
-        }).done();
-    }
-    
-    function generic_view(data) {
-        console.log(data);
-        var js_dialog;
-        var dialog_title = "Book info";
-        js_dialog = $('<div>').dialog({
-            modal: true,
-            open: function () {
-                $(this).html(data);
-            },
-            draggable: true,
-            height: 500,
-            width: 800,
-            title: dialog_title
-        });
-    }
+  function get_hello(book_id) {
+      
+      $.ajax({
+          url: "ajax/bookview.php?book_id=" + book_id,
+          success: function (data) {
+              generic_view(data);
+          }
+          
+      }).done(function () {
+        $(this).addClass("done");
+    });
+  }
+  
+  function generic_view(data) {
+      
+      var js_dialog;
+      var dialog_title = "Book info";
+      js_dialog = $('<div>').dialog({
+          modal: true,
+          open: function () {
+              $(this).html(data);
+          },
+          draggable: true,
+          height: 500,
+          width: 800,
+          title: dialog_title
+      });
+      //console.log(js_dialog);
+  }
+
+  //basic stacks data filtering
+  $(document).ready(function () {
+  $("form").submit(function (event) {
+    var formData = {
+      title: $("#title").val(),
+      author: $("#author").val(),
+      keyword: $('#keyword').val(),
+    };
+
+    //attempt to do filter utilizing existing js
+    var vis = new BrowserVis("browser_vis",1,formData);
+    event.preventDefault();
+  });
+});
+
 </script>
+</div>
 </body>
-</html>
