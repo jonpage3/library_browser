@@ -101,6 +101,11 @@ class BrowserVis {
 
     render(data, width, height, total_data) {
         
+        d3.selectAll("#canvas").remove();
+        
+        //our book length per page constant in cm
+        const pc = 0.0075
+        
         let x, y;
 
         var thisData = null;
@@ -195,11 +200,11 @@ class BrowserVis {
                     return 0;
                 }
                 else{
-                    return x((d.accum_length - d.clean_length)*.0075);
+                    return x((d.accum_length - d.clean_length)*pc);
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-100;})
-            .attr("width",function(d) {return x(d.clean_length*(.0075));})
+            .attr("width",function(d) {return x(d.clean_length*(pc));})
             .attr("height",function(d){return (canvasHeight-y(d.clean_height))+100;})
             .attr("rx","5")
             .attr("callnum",function(d){return d.callnum;})
@@ -233,10 +238,10 @@ class BrowserVis {
             .attr("x", function(d) {
                 if (zoomData.indexOf(d) == 0) {
 
-                    return x(d.clean_length/2*.0075);
+                    return x(d.clean_length/2*pc);
                 }
                 else{
-                    return x((d.accum_length - d.clean_length/2)*.0075);
+                    return x((d.accum_length - d.clean_length/2)*pc);
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-40;})
@@ -254,10 +259,10 @@ class BrowserVis {
             .attr("transform",function(d) {
                 if (zoomData.indexOf(d) == 0) {
 
-                    return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                    return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
                 }
                 else{
-                    return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                    return "rotate(90,"+x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
                 }
                 
             });
@@ -327,10 +332,10 @@ class BrowserVis {
                         return new_x(0);
                     }
                     else{
-                        return new_x((d.accum_length - (d.clean_length))*.0075);
+                        return new_x((d.accum_length - (d.clean_length))*pc);
                     }
                 })
-                .attr("width",function(d) {return x(d.clean_length*(.0075));})
+                .attr("width",function(d) {return x(d.clean_length*(pc));})
                 .attr("id",function(d){return zoomData.indexOf(d);})
                 .attr("callnum",function(d){return d.callnum;})
                 .attr("booktitle",function(d){return d.title;})
@@ -341,10 +346,10 @@ class BrowserVis {
                 .attr("x", function(d) {
                     if (data.indexOf(d) == 0) {
     
-                        return new_x(d.clean_length/2*.0075);
+                        return new_x(d.clean_length/2*pc);
                     }
                     else{
-                        return new_x((d.accum_length - d.clean_length/2)*.0075);
+                        return new_x((d.accum_length - d.clean_length/2)*pc);
                     }
                 })
                 .attr("font-size" , function(d) {
@@ -360,10 +365,10 @@ class BrowserVis {
                 .attr("transform",function(d) {
                     if (data.indexOf(d) == 0) {
     
-                        return "rotate(90,"+new_x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+new_x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
                     }
                     else{
-                        return "rotate(90,"+new_x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+new_x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
                     }
                     
                 });
@@ -418,10 +423,10 @@ class BrowserVis {
                     if ( i < acc) {
                         if (i == 0){
                             
-                            return -(x((n.accum_length)*.0075));
+                            return -(x((n.accum_length)*pc));
                         }
                         else{
-                            return -(x((n.accum_length - j.accum_length))*.0075);
+                            return -(x((n.accum_length - j.accum_length))*pc);
                         }
                     }
                     else{
@@ -429,11 +434,11 @@ class BrowserVis {
                             return 0;
                         }
                         else{
-                            return x((j.accum_length - n.accum_length)*.0075);
+                            return x((j.accum_length - n.accum_length)*pc);
                         }
                     }
                 })
-                .attr("width",function(d) {return x(d.clean_length*(.0075));})
+                .attr("width",function(d) {return x(d.clean_length*(pc));})
                 .attr("id",function(d){return zoomData.indexOf(d);})
                 .attr("callnum",function(d){return d.callnum;})
                 .attr("booktitle",function(d){return d.title;})
@@ -451,18 +456,18 @@ class BrowserVis {
                 if ( i < acc) {
                     if (i == 0){
                         
-                        return -(x((n.accum_length - d.clean_length/2)*.0075));
+                        return -(x((n.accum_length - d.clean_length/2)*pc));
                     }
                     else{
-                        return -(x((n.accum_length - j.accum_length)- d.clean_length/2)*.0075);
+                        return -(x((n.accum_length - j.accum_length)- d.clean_length/2)*pc);
                     }
                 }
                 else{
                     if (i ==acc){
-                        return x(d.clean_length/2*.0075);
+                        return x(d.clean_length/2*pc);
                     }
                     else{
-                        return x((j.accum_length - n.accum_length + d.clean_length/2)*.0075);
+                        return x((j.accum_length - n.accum_length + d.clean_length/2)*pc);
                     }
                 }
             })
@@ -484,18 +489,18 @@ class BrowserVis {
                 let j = thisData[i-1];
                 if ( i < acc) {
                     if (i == 0){
-                        return "rotate(90,"+(-(x((n.accum_length - d.clean_length/2)*.0075)))+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+(-(x((n.accum_length - d.clean_length/2)*pc)))+","+(y(d.clean_height)-40)+")";
                     }
                     else{
-                        return "rotate(90,"+(-(x((n.accum_length - j.accum_length)- d.clean_length/2)*.0075))+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+(-(x((n.accum_length - j.accum_length)- d.clean_length/2)*pc))+","+(y(d.clean_height)-40)+")";
                     }
                 }
                 else{
                     if (i ==acc){
-                        return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
                     }
                     else{
-                        return "rotate(90,"+x(((j.accum_length - n.accum_length) + d.clean_length/2)*.0075)+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+x(((j.accum_length - n.accum_length) + d.clean_length/2)*pc)+","+(y(d.clean_height)-40)+")";
                     }
                 }
                 
@@ -566,7 +571,7 @@ class BrowserVis {
                         return 0;
                     }
                     else{
-                        return x((d.accum_length - d.clean_length)*.0075);
+                        return x((d.accum_length - d.clean_length)*pc);
                     }
                 });
 
@@ -575,19 +580,19 @@ class BrowserVis {
                 .attr("x", function(d) {
                     if (zoomData.indexOf(d) == 0) {
     
-                        return x(d.clean_length/2*.0075);
+                        return x(d.clean_length/2*pc);
                     }
                     else{
-                        return x((d.accum_length - d.clean_length/2)*.0075);
+                        return x((d.accum_length - d.clean_length/2)*pc);
                     }
                 })
                 .attr("transform",function(d) {
                     if (zoomData.indexOf(d) == 0) {
     
-                        return "rotate(90,"+x(d.clean_length/2*.0075)+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
                     }
                     else{
-                        return "rotate(90,"+x((d.accum_length - d.clean_length/2)*.0075)+" ,"+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
                     }
                     
                 });
