@@ -142,14 +142,6 @@ class BrowserVis {
         //d3 select the div 
         let svg = d3.select("#"+this.svg_id);
 
-        //track the max and minimum y and x values
-        //don't think we need this
-        var limits = {maxY:null,minY:null,maxX:null,minX:null};
-        limits.maxY = d3.max(total_data,function(d){return +d.clean_height;});
-        limits.minY = d3.min(total_data,function(d){return +d.clean_height;});
-        limits.maxX = d3.max(thisData,function(d) {return +d.accum_length;});
-        limits.minX = 0;
-        
         //padding for canvas
         var padding = {top:20,bottom:20,left:200,right:20};
 
@@ -164,13 +156,16 @@ class BrowserVis {
             .attr("transform","translate("+padding.left+","+padding.top+")")
         ;
 
-        //the following code creates the axes
+        //maximum Y value for scale linear functions
+        var maxY = d3.max(total_data,function(d){return +d.clean_height;});
+
+        //this maps our x and y domains in cm to pixels
         x = d3.scaleLinear()
-            .domain([limits.minX,40])
+            .domain([0,45])
             .range([0,+canvas.attr("width")]);
         
         y = d3.scaleLinear()
-            .domain([limits.maxY*1.1,0])
+            .domain([maxY*1.1,0])
             .range([0,+canvas.attr("height")]);
 
 
@@ -182,7 +177,7 @@ class BrowserVis {
         .attr("height",canvasHeight);
 
         //Let's add some spines
-        //why do we use rect.bar?
+        //our spines are rect svgs with class bar
         var barLines = canvas.selectAll("rect.bar")
             .data(thisData);
         //append link to the barLines for individual book view
@@ -212,8 +207,7 @@ class BrowserVis {
             .style("fill", function(d){return d.color});
         
         //now time to add the title to the spines
-        //why does select my bar work?
-        var titles = canvas.selectAll("mybar")
+        canvas.selectAll()
             .data(thisData)
             .enter()
             .append("a")
