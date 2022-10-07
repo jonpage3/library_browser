@@ -110,13 +110,6 @@ class BrowserVis {
 
         var thisData = null;
 
-        var settings = {
-            targets: [],
-            detail: {
-                type: null
-            }
-        };
-
         thisData = data;
 
         //this adds an accumulated length for each item
@@ -170,7 +163,7 @@ class BrowserVis {
 
 
         //create a clip within the main svg where we dump our bookspines
-        var clip = canvas.append("clipPath")
+        canvas.append("clipPath")
         .attr("id","clip")
         .append("rect")
         .attr("width",canvasWidth)
