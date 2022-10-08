@@ -1,6 +1,6 @@
 class BrowserVis {
     constructor(svg_id, filter, options) {
-        this.url = "book_data_copy.csv";
+        this.url = "book_data.csv";
         this.svg_id = svg_id;
 
         this.height = 500;
@@ -29,11 +29,12 @@ class BrowserVis {
                 clean_date: d.clean_date,
                 color: d.color,
                 id: d.id,
-                clean_author: d.clean_author
+                clean_author: d.clean_author,
+                callnum_string: d.callnum_string
             }
         }).then(function(items) {
             
-            thisvis.render(items,thisvis.width,thisvis.height,items,null);
+            thisvis.render(items,thisvis.width,thisvis.height,items,null,null);
         })
     }
 
@@ -54,7 +55,8 @@ class BrowserVis {
                 color: d.color,
                 id: d.id,
                 clean_author: d.clean_author,
-                keyword_string: d.keyword_string
+                keyword_string: d.keyword_string,
+                callnum_string: d.callnum_string
             }
         }).then(function(items) {
             
@@ -103,17 +105,26 @@ class BrowserVis {
 
             let author_start = options.author_start;
             if (author_start.length > 0) {
-                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,author_start)
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,author_start,null)
             }
             else {
-                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,null);
+                //only do call number start at if author field is empty <--could change this later
+                let callnum_start = options.callnum_start;
+                if (callnum_start.length > 0) {
+                    let clean_callnum = callnum_start.replace(/[^\p{L}|^\p{N}]/gu,"");
+                    clean_callnum = clean_callnum.toLowerCase();
+                    thisvis.render(filtered_items,thisvis.width,thisvis.height,items,null,clean_callnum)
+                }
+                else {
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,null,null);
+                }
             }
 
         })
     }
 
-    render(data, width, height, total_data, author_start) {
-        console.log(data);
+    render(data, width, height, total_data, author_start, clean_callnum) {
+
         d3.selectAll("#canvas").remove();
         
         //our book length per page constant in cm
@@ -152,6 +163,18 @@ class BrowserVis {
                 }
                 return true;
             })
+        }
+        else if (clean_callnum != null) {
+
+            thisData.every(function(d) {
+                let callnum_string = d['callnum_string'];
+                if (callnum_string.includes(clean_callnum)){
+                    x_start = d['accum_length'] - d['clean_length'];
+                    return false;
+                }
+                return true;
+            })
+
         }
 
         //copy the data to be used for Zoom

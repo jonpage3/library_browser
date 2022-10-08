@@ -83,8 +83,10 @@
   <input type="text" id="author" name="author">
   <label for="keyword">Keyword:</label>
   <input type="text" id="keyword" name="keyword"><br>
-  <label for="author-start">Start at:</label>
+  <label for="author-start">Start at Author:</label>
   <input type="text" id="author-start" placeholder="author">
+  <label for="callnum-start">Start at Call Number:</label>
+  <input type="text" id="callnum-start" placeholder="call number">
   <input class="search-button" type="submit" value="Submit">
 </form> 
 </div>
@@ -138,6 +140,7 @@
       author: $("#author").val(),
       keyword: $('#keyword').val(),
       author_start: $('#author-start').val(),
+      callnum_start: $('#callnum-start').val(),
     };
 
     //attempt to do filter utilizing existing js
