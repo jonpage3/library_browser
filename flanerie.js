@@ -5,9 +5,7 @@ class BrowserVis {
 
         this.height = 500;
         this.width = 1200;
-        // Load the data and process it as needed.
-        //this.loadAndPrepare();
-
+        
         if (filter == null) {
             this.loadAndPrepare();
         }
@@ -21,7 +19,7 @@ class BrowserVis {
         let thisvis = this;
 
         d3.csv(this.url, function(d) {
-            //console.log(d)
+            
             return {
                 // Convert text values to other types as needed.
                 callnum: d.callnum,
@@ -34,7 +32,7 @@ class BrowserVis {
                 clean_author: d.clean_author
             }
         }).then(function(items) {
-            //console.log(items);
+            
             thisvis.render(items,thisvis.width,thisvis.height,items);
         })
     }
@@ -44,7 +42,7 @@ class BrowserVis {
 
         
         d3.csv(this.url, function(d) {
-            //console.log(d)
+            
             return {
                 // Convert text values to other types as needed.
                 callnum: d.callnum,
@@ -59,7 +57,7 @@ class BrowserVis {
                 keyword_string: d.keyword_string
             }
         }).then(function(items) {
-            //console.log(options)
+            
             let title = options.title;
             title = title.toLowerCase();
             let author = options.author;
@@ -72,7 +70,7 @@ class BrowserVis {
             if (keyword.length > 0) {
                 keyword = keyword.replace(/\s+/g, '');
                 keyword = keyword.toLowerCase();
-                //console.log(keyword);
+                
                 items.forEach(function(i){
                     var keyword_string = i.keyword_string;
                     if (keyword_string.includes(keyword)) {
@@ -86,7 +84,7 @@ class BrowserVis {
                 items.forEach(function(i){
                     var item_title = i.title + i.title2;
                     var item_author = i.clean_author;
-                    //console.log(item_author);
+                    
                     item_title = item_title.toLowerCase();
                     if (item_title.includes(title) && item_author.includes(author)){
                         filtered_items.push(i);
@@ -94,7 +92,7 @@ class BrowserVis {
                 })
             }
             }
-            //console.log(filtered_items);
+            
             thisvis.render(filtered_items,thisvis.width,thisvis.height,items);
         })
     }
@@ -238,7 +236,6 @@ class BrowserVis {
             })
             .attr("fill" , "white")
             .attr("font-family" , "sans-serif")
-            //.attr("text-anchor", "middle")
             .attr("transform",function(d) {
                 if (zoomData.indexOf(d) == 0) {
 
@@ -254,13 +251,13 @@ class BrowserVis {
 
         //add the "buttons" to move items one at a time
         d3.selectAll("circle").remove();
-        var rect_canvas = svg.append("rect")
+        svg.append("rect")
             .attr("x",625)
             .attr("y",500)
             .attr("height",75)
             .attr("width",150)
             .attr("fill","#F8F0E3");
-        var button = svg.append("circle")
+        svg.append("circle")
             .attr("cx",650)
             .attr("cy",525)
             .attr("r",6)
@@ -268,7 +265,7 @@ class BrowserVis {
             .style("stroke","black")
             .on("click",moveBooksForward);
 
-        var button_reverse = svg.append('circle')
+        svg.append('circle')
             .attr("cx",650)
             .attr("cy",550)
             .attr("r",6)
@@ -282,14 +279,14 @@ class BrowserVis {
             .attr("font-size","8px")
             .text("Click to move:");
 
-        var button_help = svg.append('text')
+        svg.append('text')
             .attr("x",675)
             .attr("y",530)
             .text("<---")
             .attr("font","bold")
             .attr("font-size","16px");
         
-        var button_help = svg.append('text')
+        svg.append('text')
             .attr("x",675)
             .attr("y",555)
             .text("--->")
