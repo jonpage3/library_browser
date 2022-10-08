@@ -1,6 +1,6 @@
 class BrowserVis {
     constructor(svg_id, filter, options) {
-        this.url = "book_data.csv";
+        this.url = "book_data_copy.csv";
         this.svg_id = svg_id;
 
         this.height = 500;
@@ -98,7 +98,7 @@ class BrowserVis {
     }
 
     render(data, width, height, total_data) {
-        
+        console.log(data);
         d3.selectAll("#canvas").remove();
         
         //our book length per page constant in cm
@@ -303,6 +303,39 @@ class BrowserVis {
         //this function handles the zoom even
         //this is the main function that produces panning behavior
         function zoomed (event){
+            let x_values = [];
+            console.log(x_values);
+            d3.selectAll("rect.bar").data(zoomData).each(function() {
+                
+                x_values.push(d3.select(this).attr("x"))
+                }) 
+            
+            for (let i=0;i<x_values.length;i++){
+                if (x_values[i] == 0) {
+                    acc = i;
+                    break;
+                }
+                else if (x_values[i] > 0) {
+                    acc = i;
+                    break
+                }
+            }
+
+
+            //console.log(thisData[acc]);
+            //console.log(thisData[acc].title);
+            let x_start = thisData[acc].accum_length * 0.0075;
+            //console.log(x_start);
+            var x2 = d3.scaleLinear()
+                    .domain([x_start,x_start + 45])
+                    .range([0,+canvas.attr("width")]);
+            console.log(acc);
+            /*if (acc == 0) {
+                var new_x = event.transform.rescaleX(x);
+            } else {
+            var new_x = event.transform.rescaleX(x2);
+            }*/
+
             var new_x = event.transform.rescaleX(x);
 
             d3.select("#canvas").selectAll("rect.bar")
