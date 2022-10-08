@@ -1,6 +1,6 @@
 class BrowserVis {
     constructor(svg_id, filter, options) {
-        this.url = "book_data.csv";
+        this.url = "book_data_copy.csv";
         this.svg_id = svg_id;
 
         this.height = 500;
@@ -33,7 +33,7 @@ class BrowserVis {
             }
         }).then(function(items) {
             
-            thisvis.render(items,thisvis.width,thisvis.height,items);
+            thisvis.render(items,thisvis.width,thisvis.height,items,null);
         })
     }
 
@@ -92,12 +92,27 @@ class BrowserVis {
                 })
             }
             }
-            
-            thisvis.render(filtered_items,thisvis.width,thisvis.height,items);
+
+            //show all books if nothing search for
+            let total_searched = options.author + options.title + options.keyword;
+            if (total_searched.length == 0) {
+                items.forEach(function(i){
+                    filtered_items.push(i);
+                })
+            }
+
+            let author_start = options.author_start;
+            if (author_start.length > 0) {
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,author_start)
+            }
+            else {
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,null);
+            }
+
         })
     }
 
-    render(data, width, height, total_data) {
+    render(data, width, height, total_data, author_start) {
         console.log(data);
         d3.selectAll("#canvas").remove();
         
@@ -105,6 +120,8 @@ class BrowserVis {
         const pc = 0.0075
         
         let x, y;
+
+        let x_start = 0;
 
         var thisData = null;
 
@@ -122,6 +139,20 @@ class BrowserVis {
                 d['accum_length'] += data[n]['accum_length'];
             }
         })
+
+        //find the start position if start at function used
+        if (author_start != null) {
+            thisData.every(function(d) {
+                //console.log(d['clean_author']);
+                let author = d['clean_author'];
+                if (author.includes(author_start)){
+                    x_start = d['accum_length'] - d['clean_length'];
+                    //console.log(x_start);
+                    return false;
+                }
+                return true;
+            })
+        }
 
         //copy the data to be used for Zoom
         //unsure if this is necessary
@@ -181,12 +212,22 @@ class BrowserVis {
             .attr("class","bar")
             .attr("clip-path","url(#clip)")
             .attr("x", function(d) {
-                if (zoomData.indexOf(d) == 0) {
+                if (x_start == 0) {
+                    if (zoomData.indexOf(d) == 0) {
 
-                    return 0;
+                        return 0;
+                    }
+                    else{
+                        return x((d.accum_length - d.clean_length)*pc);
+                    }
                 }
-                else{
-                    return x((d.accum_length - d.clean_length)*pc);
+                else {
+                    if (((d.accum_length - d.clean_length) - x_start) == 0 ){
+                        return 0;
+                    }
+                    else {
+                        return x(((d.accum_length - d.clean_length)- x_start)*pc);
+                    }
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-100;})
@@ -217,12 +258,23 @@ class BrowserVis {
                 }
             })
             .attr("x", function(d) {
-                if (zoomData.indexOf(d) == 0) {
+                if (x_start == 0) {
+                    if (zoomData.indexOf(d) == 0) {
 
-                    return x(d.clean_length/2*pc);
+                        return x(d.clean_length/2*pc);
+                    }
+                    else{
+                        return x((d.accum_length - d.clean_length/2)*pc);
+                    }
                 }
-                else{
-                    return x((d.accum_length - d.clean_length/2)*pc);
+                else {
+
+                    if (((d.accum_length - d.clean_length) - x_start) == 0) {
+                        return x(d.clean_length/2*pc);
+                    }
+                    else {
+                        return x(((d.accum_length - d.clean_length/2) - x_start)*pc);
+                    }
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-40;})
@@ -237,13 +289,23 @@ class BrowserVis {
             .attr("fill" , "white")
             .attr("font-family" , "sans-serif")
             .attr("transform",function(d) {
-                if (zoomData.indexOf(d) == 0) {
+                if (x_start == 0) {
+                    if (zoomData.indexOf(d) == 0) {
 
-                    return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else{
+                        return "rotate(90,"+x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
+                    }
                 }
                 else{
-                    return "rotate(90,"+x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
-                }
+                    if (((d.accum_length - d.clean_length) - x_start) == 0) {
+                        return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else {
+                        return "rotate(90,"+x((d.accum_length - d.clean_length/2 - x_start)*pc)+" ,"+(y(d.clean_height)-40)+")";
+                    }
+                }   
                 
             });
         
