@@ -1,6 +1,6 @@
 class BrowserVis {
     constructor(svg_id, filter, options) {
-        this.url = "book_data_copy.csv";
+        this.url = "book_data.csv";
         this.svg_id = svg_id;
 
         this.height = 500;
@@ -293,100 +293,20 @@ class BrowserVis {
             .attr("font-size","16px");
         
         //d3 zoom allows panning of items
-        let zoom = d3.zoom().on("zoom",zoomed);
+        let zoom = d3.zoom().on("zoom",zoomMove);
 
         //null here disables mouse wheel zooming
         svg.call(zoom).on("wheel.zoom",null);
         d3.select("svg").on("dblclick.zoom",null);
         
-
-        //this function handles the zoom even
-        //this is the main function that produces panning behavior
-        function zoomed (event){
-            let x_values = [];
-            console.log(x_values);
-            d3.selectAll("rect.bar").data(zoomData).each(function() {
-                
-                x_values.push(d3.select(this).attr("x"))
-                }) 
-            
-            for (let i=0;i<x_values.length;i++){
-                if (x_values[i] == 0) {
-                    acc = i;
-                    break;
-                }
-                else if (x_values[i] > 0) {
-                    acc = i;
-                    break
-                }
+        function zoomMove (event) {
+            //console.log(event.sourceEvent.movementX);
+            if (event.sourceEvent.movementX > 0) {
+                moveBooksBack(acc);
             }
-
-
-            //console.log(thisData[acc]);
-            //console.log(thisData[acc].title);
-            let x_start = thisData[acc].accum_length * 0.0075;
-            //console.log(x_start);
-            var x2 = d3.scaleLinear()
-                    .domain([x_start,x_start + 45])
-                    .range([0,+canvas.attr("width")]);
-            console.log(acc);
-            /*if (acc == 0) {
-                var new_x = event.transform.rescaleX(x);
-            } else {
-            var new_x = event.transform.rescaleX(x2);
-            }*/
-
-            var new_x = event.transform.rescaleX(x);
-
-            d3.select("#canvas").selectAll("rect.bar")
-                .data(thisData)
-                .attr("x", function(d) {
-                    if (data.indexOf(d) == 0) {
-
-                        return new_x(0);
-                    }
-                    else{
-                        return new_x((d.accum_length - (d.clean_length))*pc);
-                    }
-                })
-                .attr("width",function(d) {return x(d.clean_length*(pc));})
-                .attr("id",function(d){return zoomData.indexOf(d);})
-                .attr("callnum",function(d){return d.callnum;})
-                .attr("booktitle",function(d){return d.title;})
-                .style("fill", function(d){return d.color});
-            
-            d3.select('#canvas').selectAll("text")
-                .data(thisData)
-                .attr("x", function(d) {
-                    if (data.indexOf(d) == 0) {
-    
-                        return new_x(d.clean_length/2*pc);
-                    }
-                    else{
-                        return new_x((d.accum_length - d.clean_length/2)*pc);
-                    }
-                })
-                .attr("font-size" , function(d) {
-                    if (d.clean_length > 100){
-                        return "12px";
-                    }
-                    else {
-                        return "6px";
-                    }
-                })
-                .attr("fill" , "white")
-                .attr("font-family" , "sans-serif")
-                .attr("transform",function(d) {
-                    if (data.indexOf(d) == 0) {
-    
-                        return "rotate(90,"+new_x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
-                    }
-                    else{
-                        return "rotate(90,"+new_x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
-                    }
-                    
-                });
-
+            else if (event.sourceEvent.movementX < 0) {
+                moveBooksForward(acc);
+            }
         }
 
 
