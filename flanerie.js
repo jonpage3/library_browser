@@ -210,11 +210,7 @@ class BrowserVis {
             .attr("onclick","get_hello(this.id);return false;")
             .append("text")
             .text(function(d) { 
-                //console.log(y(d.clean_height))
                 let title = d.title;
-                //console.log(y(title.length));
-                //if ((y(d.clean_height) - y(title.length)) > ((canvasHeight-y(d.clean_height)) +100))
-                //{console.log(title);};
                 if ((y(d.clean_height) - y(title.length)) > ((canvasHeight-y(d.clean_height)) +100)){
                     title = title.slice(0,title.length/2) + "...";
                     return title
@@ -254,7 +250,8 @@ class BrowserVis {
                 
             });
         
-        
+        var acc = 0;
+
         //add the "buttons" to move items one at a time
         d3.selectAll("circle").remove();
         var rect_canvas = svg.append("rect")
@@ -362,36 +359,10 @@ class BrowserVis {
 
         }
 
-        var acc = 0;
 
         //this function handles the bulk of moving the items one at a time
         function moveBooks(acc) {
             
-            //console.log(acc);
-            /**
-             * need some functionaliy to figure out if the user has used the Zoom feature
-             * 
-             */
-            /*
-            //the following kind of works but needs to be made to do 
-            //different things depending on if move forward or move back are called 
-            let x_values = [];
-            d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
-                //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
-                x_values.push(d3.select(this).attr("x"))
-                }) 
-            
-            for (let i=0;i<x_values.length;i++){
-                if (x_values[i] == 0) {
-                    acc = i;
-                    break;
-                }
-                else if (x_values[i] > 0) {
-                    acc = i-1;
-                }
-            }
-            */
-            //acc+=1;
 
             /**
              * for the future if there's a data selection of only 20 books or so,
@@ -403,7 +374,7 @@ class BrowserVis {
                 .data(moveData)
                 .attr("x", function(d) {
                     let i = thisData.indexOf(d);
-                    // to access the total accum length of that have been pushed left
+                    // to access the total accum length of that have been pushed left of the canvas
                     let n = thisData[acc-1];
                     // to access the total accum length length of the book before current
                     let j = thisData[i-1];
@@ -413,7 +384,7 @@ class BrowserVis {
                             return -(x((n.accum_length)*pc));
                         }
                         else{
-                            return -(x((n.accum_length - j.accum_length))*pc);
+                            return -(x((n.accum_length - j.accum_length)*pc));
                         }
                     }
                     else{
@@ -516,7 +487,7 @@ class BrowserVis {
             }
             
             acc +=1;
-            //console.log(acc);
+
             moveBooks(acc);
             
         }
@@ -524,10 +495,10 @@ class BrowserVis {
         //handles the position of the items and sets the accumulator
         //for the move books function when moving books to the right (i.e. walking left down a call number range)
         function moveBooksBack(acc) {
-            //canvas.exit().remove();
+
             let x_values = [];
             d3.selectAll("rect.bar").data(moveData).each(function(d,i) {
-                //console.log("The x position of the rect #" + d.id + " is " + d3.select(this).attr("x"))
+
                 x_values.push(d3.select(this).attr("x"))
                 }) 
             
@@ -542,7 +513,7 @@ class BrowserVis {
                 }
             }
             acc -= 1;
-            //console.log(acc);
+
             if (acc < 0){
                 acc = 0;
                 throw "You're at the beginning of this section of the stacks!";
