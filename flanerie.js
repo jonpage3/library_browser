@@ -560,7 +560,7 @@ class BrowserVis {
             svg.append('text')
                 .attr('class','call_text')
                 .attr('x',padding.left + 10)
-                .attr('y',505)
+                .attr('y',510)
                 .text(call_text(thisData).begin)
                 .attr('font','bold')
                 .attr('font-size','14px');
@@ -568,7 +568,7 @@ class BrowserVis {
             svg.append('text')
                 .attr('class','call_text')
                 .attr('x',padding.left + canvasWidth -140)
-                .attr('y',505)
+                .attr('y',510)
                 .text(call_text(thisData).end)
                 .attr('font','bold')
                 .attr('font-size','14px');
