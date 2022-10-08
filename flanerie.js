@@ -29,11 +29,12 @@ class BrowserVis {
                 clean_date: d.clean_date,
                 color: d.color,
                 id: d.id,
-                clean_author: d.clean_author
+                clean_author: d.clean_author,
+                callnum_string: d.callnum_string
             }
         }).then(function(items) {
             
-            thisvis.render(items,thisvis.width,thisvis.height,items);
+            thisvis.render(items,thisvis.width,thisvis.height,items,null,null);
         })
     }
 
@@ -54,7 +55,8 @@ class BrowserVis {
                 color: d.color,
                 id: d.id,
                 clean_author: d.clean_author,
-                keyword_string: d.keyword_string
+                keyword_string: d.keyword_string,
+                callnum_string: d.callnum_string
             }
         }).then(function(items) {
             
@@ -92,19 +94,45 @@ class BrowserVis {
                 })
             }
             }
-            
-            thisvis.render(filtered_items,thisvis.width,thisvis.height,items);
+
+            //show all books if nothing search for
+            let total_searched = options.author + options.title + options.keyword;
+            if (total_searched.length == 0) {
+                items.forEach(function(i){
+                    filtered_items.push(i);
+                })
+            }
+
+            let author_start = options.author_start;
+            if (author_start.length > 0) {
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,author_start,null)
+            }
+            else {
+                //only do call number start at if author field is empty <--could change this later
+                let callnum_start = options.callnum_start;
+                if (callnum_start.length > 0) {
+                    let clean_callnum = callnum_start.replace(/[^\p{L}|^\p{N}]/gu,"");
+                    clean_callnum = clean_callnum.toLowerCase();
+                    thisvis.render(filtered_items,thisvis.width,thisvis.height,items,null,clean_callnum)
+                }
+                else {
+                thisvis.render(filtered_items,thisvis.width,thisvis.height,items,null,null);
+                }
+            }
+
         })
     }
 
-    render(data, width, height, total_data) {
-        
+    render(data, width, height, total_data, author_start, clean_callnum) {
+
         d3.selectAll("#canvas").remove();
         
         //our book length per page constant in cm
         const pc = 0.0075
         
         let x, y;
+
+        let x_start = 0;
 
         var thisData = null;
 
@@ -122,6 +150,32 @@ class BrowserVis {
                 d['accum_length'] += data[n]['accum_length'];
             }
         })
+
+        //find the start position if start at function used
+        if (author_start != null) {
+            thisData.every(function(d) {
+                //console.log(d['clean_author']);
+                let author = d['clean_author'];
+                if (author.includes(author_start)){
+                    x_start = d['accum_length'] - d['clean_length'];
+                    //console.log(x_start);
+                    return false;
+                }
+                return true;
+            })
+        }
+        else if (clean_callnum != null) {
+
+            thisData.every(function(d) {
+                let callnum_string = d['callnum_string'];
+                if (callnum_string.includes(clean_callnum)){
+                    x_start = d['accum_length'] - d['clean_length'];
+                    return false;
+                }
+                return true;
+            })
+
+        }
 
         //copy the data to be used for Zoom
         //unsure if this is necessary
@@ -181,12 +235,22 @@ class BrowserVis {
             .attr("class","bar")
             .attr("clip-path","url(#clip)")
             .attr("x", function(d) {
-                if (zoomData.indexOf(d) == 0) {
+                if (x_start == 0) {
+                    if (zoomData.indexOf(d) == 0) {
 
-                    return 0;
+                        return 0;
+                    }
+                    else{
+                        return x((d.accum_length - d.clean_length)*pc);
+                    }
                 }
-                else{
-                    return x((d.accum_length - d.clean_length)*pc);
+                else {
+                    if (((d.accum_length - d.clean_length) - x_start) == 0 ){
+                        return 0;
+                    }
+                    else {
+                        return x(((d.accum_length - d.clean_length)- x_start)*pc);
+                    }
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-100;})
@@ -217,12 +281,23 @@ class BrowserVis {
                 }
             })
             .attr("x", function(d) {
-                if (zoomData.indexOf(d) == 0) {
+                if (x_start == 0) {
+                    if (zoomData.indexOf(d) == 0) {
 
-                    return x(d.clean_length/2*pc);
+                        return x(d.clean_length/2*pc);
+                    }
+                    else{
+                        return x((d.accum_length - d.clean_length/2)*pc);
+                    }
                 }
-                else{
-                    return x((d.accum_length - d.clean_length/2)*pc);
+                else {
+
+                    if (((d.accum_length - d.clean_length) - x_start) == 0) {
+                        return x(d.clean_length/2*pc);
+                    }
+                    else {
+                        return x(((d.accum_length - d.clean_length/2) - x_start)*pc);
+                    }
                 }
             })
             .attr("y",function(d){return y(d.clean_height)-40;})
@@ -237,13 +312,23 @@ class BrowserVis {
             .attr("fill" , "white")
             .attr("font-family" , "sans-serif")
             .attr("transform",function(d) {
-                if (zoomData.indexOf(d) == 0) {
+                if (x_start == 0) {
+                    if (zoomData.indexOf(d) == 0) {
 
-                    return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
+                        return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else{
+                        return "rotate(90,"+x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
+                    }
                 }
                 else{
-                    return "rotate(90,"+x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
-                }
+                    if (((d.accum_length - d.clean_length) - x_start) == 0) {
+                        return "rotate(90,"+x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
+                    }
+                    else {
+                        return "rotate(90,"+x((d.accum_length - d.clean_length/2 - x_start)*pc)+" ,"+(y(d.clean_height)-40)+")";
+                    }
+                }   
                 
             });
         
@@ -293,67 +378,20 @@ class BrowserVis {
             .attr("font-size","16px");
         
         //d3 zoom allows panning of items
-        let zoom = d3.zoom().on("zoom",zoomed);
+        let zoom = d3.zoom().on("zoom",zoomMove);
 
         //null here disables mouse wheel zooming
         svg.call(zoom).on("wheel.zoom",null);
         d3.select("svg").on("dblclick.zoom",null);
         
-
-        //this function handles the zoom even
-        //this is the main function that produces panning behavior
-        function zoomed (event){
-            var new_x = event.transform.rescaleX(x);
-
-            d3.select("#canvas").selectAll("rect.bar")
-                .data(thisData)
-                .attr("x", function(d) {
-                    if (data.indexOf(d) == 0) {
-
-                        return new_x(0);
-                    }
-                    else{
-                        return new_x((d.accum_length - (d.clean_length))*pc);
-                    }
-                })
-                .attr("width",function(d) {return x(d.clean_length*(pc));})
-                .attr("id",function(d){return zoomData.indexOf(d);})
-                .attr("callnum",function(d){return d.callnum;})
-                .attr("booktitle",function(d){return d.title;})
-                .style("fill", function(d){return d.color});
-            
-            d3.select('#canvas').selectAll("text")
-                .data(thisData)
-                .attr("x", function(d) {
-                    if (data.indexOf(d) == 0) {
-    
-                        return new_x(d.clean_length/2*pc);
-                    }
-                    else{
-                        return new_x((d.accum_length - d.clean_length/2)*pc);
-                    }
-                })
-                .attr("font-size" , function(d) {
-                    if (d.clean_length > 100){
-                        return "12px";
-                    }
-                    else {
-                        return "6px";
-                    }
-                })
-                .attr("fill" , "white")
-                .attr("font-family" , "sans-serif")
-                .attr("transform",function(d) {
-                    if (data.indexOf(d) == 0) {
-    
-                        return "rotate(90,"+new_x(d.clean_length/2*pc)+","+(y(d.clean_height)-40)+")";
-                    }
-                    else{
-                        return "rotate(90,"+new_x((d.accum_length - d.clean_length/2)*pc)+" ,"+(y(d.clean_height)-40)+")";
-                    }
-                    
-                });
-
+        function zoomMove (event) {
+            //console.log(event.sourceEvent.movementX);
+            if (event.sourceEvent.movementX > 0) {
+                moveBooksBack(acc);
+            }
+            else if (event.sourceEvent.movementX < 0) {
+                moveBooksForward(acc);
+            }
         }
 
 

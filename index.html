@@ -27,8 +27,6 @@
     color: #4B9CD3;
     font-size: .6vw;
     position: relative;
-    /*left: 20%;*/
-    /*top: 10%;*/
     display: flex;
     flex-direction: column;
     
@@ -43,7 +41,6 @@
 
   #brand {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    /*font-style: italic;*/
     font-size: .6vw;
     color: 	#4B9CD3;
     text-align: "center";
@@ -86,6 +83,10 @@
   <input type="text" id="author" name="author">
   <label for="keyword">Keyword:</label>
   <input type="text" id="keyword" name="keyword"><br>
+  <label for="author-start">Start at Author:</label>
+  <input type="text" id="author-start" placeholder="author">
+  <label for="callnum-start">Start at Call Number:</label>
+  <input type="text" id="callnum-start" placeholder="call number">
   <input class="search-button" type="submit" value="Submit">
 </form> 
 </div>
@@ -138,6 +139,8 @@
       title: $("#title").val(),
       author: $("#author").val(),
       keyword: $('#keyword').val(),
+      author_start: $('#author-start').val(),
+      callnum_start: $('#callnum-start').val(),
     };
 
     //attempt to do filter utilizing existing js
