@@ -340,42 +340,61 @@ class BrowserVis {
             .attr("x",625)
             .attr("y",475)
             .attr("height",75)
-            .attr("width",150)
+            .attr("width",152)
             .attr("fill","#F8F0E3");
-        svg.append("circle")
-            .attr("cx",650)
-            .attr("cy",500)
-            .attr("r",6)
-            .style("fill","green")
-            .style("stroke","black")
-            .on("click",moveBooksForward);
-
-        svg.append('circle')
-            .attr("cx",650)
-            .attr("cy",525)
-            .attr("r",6)
-            .style("fill","red")
-            .style("stroke","black")
-            .on("click",moveBooksBack);
         
-        svg.append('text')
-            .attr("x",650)
-            .attr("y",485)
-            .attr("font-size","8px")
-            .text("Click to move:");
-
-        svg.append('text')
-            .attr("x",675)
-            .attr("y",505)
-            .text("<---")
-            .attr("font","bold")
-            .attr("font-size","16px");
+        //add arrows
+        d3.selectAll("image.arrow").remove();
+        d3.selectAll("rect.arrow-foward").remove();
+        d3.selectAll("rect.arrow-backward").remove();
+       
+        svg.append("svg:image")
+            .attr("class","arrow")
+            .attr("x",719)
+            .attr("y",500)
+            .attr("width",40)
+            .attr("height",25)
+            .attr("xlink:href","assets/forward_arrow.png");
         
-        svg.append('text')
-            .attr("x",675)
-            .attr("y",530)
-            .text("--->")
-            .attr("font-size","16px");
+        svg.append("rect")
+            .attr("class","arrow-forward")
+            .attr("x",725)
+            .attr("y",500)
+            .attr("width",28)
+            .attr("height",25)
+            .style("fill", "transparent")
+            .style("stroke", "black")
+            .style("stroke-width", "4px")
+            .on("click",function(){
+                moveBooksForward(acc);
+                d3.select("rect.arrow-backward").style("stroke","black")
+                d3.select(this).style("stroke","yellow");
+            });
+            
+
+        svg.append("svg:image")
+            .attr("class","arrow")
+            .attr("x",643)
+            .attr("y",500)
+            .attr("width",40)
+            .attr("height",25)
+            .attr("xlink:href","assets/back_arrow.png");
+        
+        svg.append("rect")
+            .attr("class","arrow-backward")
+            .attr("x",649)
+            .attr("y",500)
+            .attr("width",28)
+            .attr("height",25)
+            .style("fill", "transparent")
+            .style("stroke", "black")
+            .style("stroke-width", "4px")
+            .on("click",function(){
+                moveBooksBack(acc);
+                d3.selectAll("rect.arrow-forward").style("stroke","black")
+                d3.select(this).style("stroke","yellow");
+            });
+
         
         //call number tracker boxes
         svg.append('rect')
