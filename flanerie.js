@@ -338,13 +338,13 @@ class BrowserVis {
         d3.selectAll("circle").remove();
         svg.append("rect")
             .attr("x",625)
-            .attr("y",500)
+            .attr("y",475)
             .attr("height",75)
             .attr("width",150)
             .attr("fill","#F8F0E3");
         svg.append("circle")
             .attr("cx",650)
-            .attr("cy",525)
+            .attr("cy",500)
             .attr("r",6)
             .style("fill","green")
             .style("stroke","black")
@@ -352,7 +352,7 @@ class BrowserVis {
 
         svg.append('circle')
             .attr("cx",650)
-            .attr("cy",550)
+            .attr("cy",525)
             .attr("r",6)
             .style("fill","red")
             .style("stroke","black")
@@ -360,22 +360,78 @@ class BrowserVis {
         
         svg.append('text')
             .attr("x",650)
-            .attr("y",510)
+            .attr("y",485)
             .attr("font-size","8px")
             .text("Click to move:");
 
         svg.append('text')
             .attr("x",675)
-            .attr("y",530)
+            .attr("y",505)
             .text("<---")
             .attr("font","bold")
             .attr("font-size","16px");
         
         svg.append('text')
             .attr("x",675)
-            .attr("y",555)
+            .attr("y",530)
             .text("--->")
             .attr("font-size","16px");
+        
+        //call number tracker boxes
+        svg.append('rect')
+            .attr('class','lccn_label')
+            .attr('x',padding.left)
+            .attr('y',475)
+            .attr("height",75)
+            .attr("width",150)
+            .attr("rx",5)
+            .attr("fill","#e3ebf8");
+        
+        svg.append('rect')
+            .attr('class','lccn_label')
+            .attr('x',padding.left + canvasWidth -150)
+            .attr('y',475)
+            .attr("height",75)
+            .attr("width",150)
+            .attr("rx",5)
+            .attr("fill","#e3ebf8");
+        
+        svg.append('text')
+            .attr('class','call_text')
+            .attr('x',padding.left + 20)
+            .attr('y',505)
+            .text(call_text(thisData).begin)
+            .attr('font','bold')
+            .attr('font-size','14px');
+        
+        svg.append('text')
+            .attr('class','call_text')
+            .attr('x',padding.left + canvasWidth -130)
+            .attr('y',505)
+            .text(call_text(thisData).end)
+            .attr('font','bold')
+            .attr('font-size','14px');
+
+        
+
+        //function for addng text to callnumber trackers
+        function call_text(data,acc) {
+            
+            let call_array = [];
+            d3.selectAll("rect.bar").data(data).each(function(d,i) {
+                if (d3.select(this).attr("x") >= 0 && d3.select(this).attr("x") <= 980) {
+                    call_array.push(d3.select(this).attr("callnum"));
+                }
+                }) 
+
+            let call_texts = {"begin":"","end":""};
+            call_texts.begin = call_array[0];
+            call_texts.end = call_array.pop();
+
+
+            return call_texts;
+        }
+
         
         //d3 zoom allows panning of items
         let zoom = d3.zoom().on("zoom",zoomMove);
@@ -384,6 +440,7 @@ class BrowserVis {
         svg.call(zoom).on("wheel.zoom",null);
         d3.select("svg").on("dblclick.zoom",null);
         
+        //pipe to decide which function to call
         function zoomMove (event) {
             //console.log(event.sourceEvent.movementX);
             if (event.sourceEvent.movementX > 0) {
@@ -498,6 +555,24 @@ class BrowserVis {
                 }
                 
             });
+
+            d3.selectAll("text.call_text").remove();
+            svg.append('text')
+                .attr('class','call_text')
+                .attr('x',padding.left + 20)
+                .attr('y',505)
+                .text(call_text(thisData).begin)
+                .attr('font','bold')
+                .attr('font-size','14px');
+        
+            svg.append('text')
+                .attr('class','call_text')
+                .attr('x',padding.left + canvasWidth -130)
+                .attr('y',505)
+                .text(call_text(thisData).end)
+                .attr('font','bold')
+                .attr('font-size','14px');
+
         }
 
         //handles the position of the items and sets the accumulator
