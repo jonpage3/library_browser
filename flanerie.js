@@ -398,16 +398,16 @@ class BrowserVis {
         
         svg.append('text')
             .attr('class','call_text')
-            .attr('x',padding.left + 20)
-            .attr('y',505)
+            .attr('x',padding.left + 10)
+            .attr('y',510)
             .text(call_text(thisData).begin)
             .attr('font','bold')
             .attr('font-size','14px');
         
         svg.append('text')
             .attr('class','call_text')
-            .attr('x',padding.left + canvasWidth -130)
-            .attr('y',505)
+            .attr('x',padding.left + canvasWidth -140)
+            .attr('y',510)
             .text(call_text(thisData).end)
             .attr('font','bold')
             .attr('font-size','14px');
@@ -559,7 +559,7 @@ class BrowserVis {
             d3.selectAll("text.call_text").remove();
             svg.append('text')
                 .attr('class','call_text')
-                .attr('x',padding.left + 20)
+                .attr('x',padding.left + 10)
                 .attr('y',505)
                 .text(call_text(thisData).begin)
                 .attr('font','bold')
@@ -567,7 +567,7 @@ class BrowserVis {
         
             svg.append('text')
                 .attr('class','call_text')
-                .attr('x',padding.left + canvasWidth -130)
+                .attr('x',padding.left + canvasWidth -140)
                 .attr('y',505)
                 .text(call_text(thisData).end)
                 .attr('font','bold')
