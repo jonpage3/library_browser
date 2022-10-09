@@ -30,7 +30,9 @@ class BrowserVis {
                 color: d.color,
                 id: d.id,
                 clean_author: d.clean_author,
-                callnum_string: d.callnum_string
+                callnum_string: d.callnum_string,
+                font_family: d.font_family,
+                clean_title: d.clean_title
             }
         }).then(function(items) {
             
@@ -56,7 +58,9 @@ class BrowserVis {
                 id: d.id,
                 clean_author: d.clean_author,
                 keyword_string: d.keyword_string,
-                callnum_string: d.callnum_string
+                callnum_string: d.callnum_string,
+                font_family: d.font_family,
+                clean_title: d.clean_title
             }
         }).then(function(items) {
             
@@ -124,7 +128,7 @@ class BrowserVis {
     }
 
     render(data, width, height, total_data, author_start, clean_callnum) {
-
+        console.log(data);
         d3.selectAll("#canvas").remove();
         
         //our book length per page constant in cm
@@ -272,12 +276,12 @@ class BrowserVis {
             .attr("onclick","get_hello(this.id);return false;")
             .append("text")
             .text(function(d) { 
-                let title = d.title;
+                let title = d.clean_title;
                 if ((y(d.clean_height) - y(title.length)) > ((canvasHeight-y(d.clean_height)) +100)){
                     title = title.slice(0,title.length/2) + "...";
                     return title
                 } else {
-                return d.title; 
+                return d.clean_title; 
                 }
             })
             .attr("x", function(d) {
@@ -310,7 +314,7 @@ class BrowserVis {
                 }
             })
             .attr("fill" , "white")
-            .attr("font-family" , "sans-serif")
+            .attr("font-family" ,function(d){return d.font_family},"sans-serif")
             .attr("transform",function(d) {
                 if (x_start == 0) {
                     if (zoomData.indexOf(d) == 0) {
@@ -402,7 +406,7 @@ class BrowserVis {
             .attr('x',padding.left)
             .attr('y',475)
             .attr("height",75)
-            .attr("width",150)
+            .attr("width",170)
             .attr("rx",5)
             .attr("fill","#e3ebf8");
         
@@ -411,7 +415,7 @@ class BrowserVis {
             .attr('x',padding.left + canvasWidth -150)
             .attr('y',475)
             .attr("height",75)
-            .attr("width",150)
+            .attr("width",170)
             .attr("rx",5)
             .attr("fill","#e3ebf8");
         
@@ -549,7 +553,7 @@ class BrowserVis {
                 }
             })
             .attr("fill" , "white")
-            .attr("font-family" , "sans-serif")
+            .attr("font-family" , function(d){return d.font_family},"sans-serif")
             .attr("transform",function(d) {
                 let i = thisData.indexOf(d);
                 // to access the total accum length of that have been pushed left
